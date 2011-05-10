@@ -1,0 +1,4 @@
+1.0 10 May 2011
+
+first public release. cvxmod solver, l1 path solver, l2 descent
+solver.
