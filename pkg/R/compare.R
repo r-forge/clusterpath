@@ -3,7 +3,7 @@
 ### the clustering method name, [[2]] is a function which takes a data
 ### matrix m and number of clusters k and then returns a vector of
 ### integer cluster assignments.
-all.clusterings <-
+clusterings <-
   list(list("old spectral clusterpath",function(m,k,verbose=0,...){
     V <- get.old.best(m,k,exponential.eigenvectors)
     path <- join.clusters2.general(V,verbose=verbose,check.split=0,lambda=1e-6,
@@ -59,12 +59,12 @@ all.clusterings <-
   }))
 
 ### now you can type cluster.funs$clusterpath(matrix) for example
-cluster.funs <- lapply(all.clusterings,"[[",2)
-names(cluster.funs) <- sapply(all.clusterings,"[[",1)
+cluster.funs <- lapply(clusterings,"[[",2)
+names(cluster.funs) <- sapply(clusterings,"[[",1)
 
 ### Call this function with a matrix m and number of clusters k to run
 ### several clustering algorithms on the matrix.
-cluster.points <- structure(function(m,k,clusterings=all.clusterings,...){
+cluster.points <- structure(function(m,k,clusterings=clusterings,...){
   colnames(m) <- alphacolnames(m)
   call.do <- function(args,what)do.call(what,args)
   ## return results of all methods

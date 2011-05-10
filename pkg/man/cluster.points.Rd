@@ -4,7 +4,7 @@
 \description{Call this function with a matrix m and number of clusters k to run
 several clustering algorithms on the matrix.}
 \usage{
-cluster.points(m, k, clusterings = all.clusterings, ...)
+cluster.points(m, k, clusterings = clusterings, ...)
 }
 \arguments{
   \item{m}{
