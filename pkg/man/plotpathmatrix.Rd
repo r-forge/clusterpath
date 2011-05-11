@@ -21,6 +21,6 @@ plotpathmatrix(path, ...)
 
 \examples{
 ## try to cluster the iris data
-path <- join.clusters2.general(iris[,1:4],check.splits=0,gamma=1)
+path <- clusterpath.l2.general(iris[,1:4],check.splits=0,gamma=1)
 plot(path,groups=iris$Species)
 }

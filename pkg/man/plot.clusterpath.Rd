@@ -8,7 +8,7 @@ represent exactly the entire path of optimal solutions.}
 \method{plot}{clusterpath}(x, type = "l", main = "The entire regularization path of optimal solutions for each variable", xlab = expression(paste("location in the regularization path  ", lambda)), ylab = expression(paste("optimal coefficient  ", alpha)), strip = strip.custom(strip.names = TRUE), layout = c(1, nlevels(x$col)), ...)
 }
 \arguments{
-  \item{x}{data frame returned by clustermat.l1.id}
+  \item{x}{data frame returned by clusterpath.l1.id}
   \item{type}{plot type, see ?xyplot}
   \item{main}{main title}
   \item{xlab}{annotation for the horizontal axis}
@@ -27,9 +27,9 @@ represent exactly the entire path of optimal solutions.}
 
 \examples{
 sim <- gendata(N=20,D=5,K=5)
-df <- clustermat.l1.id(sim$mat)
+df <- clusterpath.l1.id(sim$mat)
 plot(df)
 
-df.iris <- clustermat.l1.id(as.matrix(iris[,1:4]))
+df.iris <- clusterpath.l1.id(as.matrix(iris[,1:4]))
 plot(df.iris)
 }

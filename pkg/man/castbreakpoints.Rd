@@ -24,7 +24,7 @@ for the l1 problem.}
 
 \examples{
 sim <- gendata(N=10,D=2,K=2)
-df <- clustermat.l1.id(sim$mat)
+df <- clusterpath.l1.id(sim$mat)
 system.time(str(castbreakpoints(df)))
 system.time(str(predict(df)))
 system.time(str(castbreakpoints(predict(df))))  

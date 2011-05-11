@@ -14,7 +14,7 @@ plotpathmatrix <- structure(function(path,...){
   },...)
 },ex=function(){
   ## try to cluster the iris data
-  path <- join.clusters2.general(iris[,1:4],check.splits=0,gamma=1)
+  path <- clusterpath.l2.general(iris[,1:4],check.splits=0,gamma=1)
   plot(path,groups=iris$Species)
 })
 
@@ -42,12 +42,12 @@ cluster3d <- structure(function
  ){
   require(rgl)
   stopifnot(ncol(x)==3)
-  solutions <- join.clusters2(x,gamma=gamma)
+  solutions <- clusterpath.l2(x,gamma=gamma)
   ##3d plotting code
   plot3d(x,type="p",box=FALSE,aspect=TRUE)
   plotpath3d(solutions,col="blue",lwd=2)
   ## add l1 path
-  path <- clustermat.l1.id(x)
+  path <- clusterpath.l1.id(x)
   bpts <- castbreakpoints(path)
   plotpath3d(bpts,col="orange",lwd=2)
   invisible(list(l1.breakpoints.dims=path,
@@ -65,7 +65,7 @@ plot.clusterpath <- structure(function
 ### all the breakpoints for each dimension, so we can plot lines to
 ### represent exactly the entire path of optimal solutions.
 (x,
-### data frame returned by clustermat.l1.id
+### data frame returned by clusterpath.l1.id
  type="l",
 ### plot type, see ?xyplot
  main="The entire regularization path of optimal solutions for each variable",
@@ -86,10 +86,10 @@ plot.clusterpath <- structure(function
 ### lattice xyplot showing the entire path of solutions.
 },ex=function(){
   sim <- gendata(N=20,D=5,K=5)
-  df <- clustermat.l1.id(sim$mat)
+  df <- clusterpath.l1.id(sim$mat)
   plot(df)
 
-  df.iris <- clustermat.l1.id(as.matrix(iris[,1:4]))
+  df.iris <- clusterpath.l1.id(as.matrix(iris[,1:4]))
   plot(df.iris)
 })
 
@@ -106,7 +106,7 @@ plot2d <- structure(function
 ### additional breakpoints, which are calculated by castbreakpoints
 ### before plotting using ggplot2.
 (x
-### clusterpath data frame as returned by clustermat.l1.id.
+### clusterpath data frame as returned by clusterpath.l1.id.
  ){
   if(!is.null(x$col)){
     if(nlevels(x$col)==2){
@@ -131,7 +131,7 @@ plot2d <- structure(function
     opts(title="Path of optimal solutions for data in 2d")
 },ex=function(){
   sim <- gendata(N=5,D=2,K=2)
-  df <- clustermat.l1.id(sim$mat)
+  df <- clusterpath.l1.id(sim$mat)
   plot2d(df)
 })
 
@@ -178,7 +178,7 @@ castbreakpoints <- structure(function
 ### for the l1 problem.
 },ex=function(){
   sim <- gendata(N=10,D=2,K=2)
-  df <- clustermat.l1.id(sim$mat)
+  df <- clusterpath.l1.id(sim$mat)
   system.time(str(castbreakpoints(df)))
   system.time(str(predict(df)))
   system.time(str(castbreakpoints(predict(df))))  
@@ -194,7 +194,7 @@ path.animation <- structure(function
 ### 2d. This works best for the path algorithm, since each animation
 ### frame will represent a breakpoint in the path.
 (df,
-### Result of clustermat.l1.id.
+### Result of clusterpath.l1.id.
  outdir=tempfile(),
 ### Subdirectory for plot files, to be created.
  title="Calculation of the path in 2d"
@@ -234,6 +234,6 @@ path.animation <- structure(function
   sim <- gendata(N <- 5,2,2,0.1)
   colnames(sim$mat) <- c("height","length")
   xyplot(length~height,data.frame(sim$mat,row=1:N),aspect="iso",group=row)
-  df <- clustermat.l1.id(sim$mat)
+  df <- clusterpath.l1.id(sim$mat)
   ##path.animation(df)
 })

@@ -16,7 +16,7 @@ cvxcheck <- structure(function
   sim <- gendata(N <- 5,2,2,0.1)
   colnames(sim$mat) <- c("height","length")
   xyplot(length~height,data.frame(sim$mat,row=1:N),aspect="iso",group=row)
-  df <- clustermat.l1.id(sim$mat)
+  df <- clusterpath.l1.id(sim$mat)
   cvx <- cvxcheck(df)
   library(reshape)
   cvx.melt <- melt(cvx,measure.vars=1:2)
@@ -165,7 +165,7 @@ cvxmod.cluster <- structure(function
   ## otherwise, this is useful for comparing using lambda values
   set.seed(1)
   sim2 <- gendata(N=5,D=1,K=2)
-  path <- clustermat.l1.id(sim2$mat)
+  path <- clusterpath.l1.id(sim2$mat)
   lvals <- seq(0,max(path$lambda),l=8)
   cvx2 <- cvxmod.cluster(sim2$mat,norm=1,gamma=0,lambda=lvals)
   library(latticeExtra)

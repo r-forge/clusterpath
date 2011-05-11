@@ -67,7 +67,7 @@ with an error.}
   ## otherwise, this is useful for comparing using lambda values
   set.seed(1)
   sim2 <- gendata(N=5,D=1,K=2)
-  path <- clustermat.l1.id(sim2$mat)
+  path <- clusterpath.l1.id(sim2$mat)
   lvals <- seq(0,max(path$lambda),l=8)
   cvx2 <- cvxmod.cluster(sim2$mat,norm=1,gamma=0,lambda=lvals)
   library(latticeExtra)

@@ -1,19 +1,19 @@
-join.clusters2 <- structure(function
+clusterpath.l2 <- structure(function
 ### Cluster a matrix of data using the L2 penalty and fused group
 ### lasso.
 (x,
 ### Matrix of data to cluster.
  ...
-### passed to join.clusters2.general
+### passed to clusterpath.l2.general
  ){
-  join.clusters2.general(x=x,w=x,check.splits=0,...)
+  clusterpath.l2.general(x=x,w=x,check.splits=0,...)
 },ex=function(){
   ## cluster the iris data
-  path <- join.clusters2.general(scale(iris[,1:4]),gamma=1)
+  path <- clusterpath.l2.general(scale(iris[,1:4]),gamma=1)
   plot(path,groups=iris$Species)
 })
 
-join.clusters2.general <- structure(function
+clusterpath.l2.general <- structure(function
 ### Cluster a matrix of data using the L2 penalty and weights that
 ### potentially depend on another matrix.
 (x,
@@ -127,7 +127,7 @@ join.clusters2.general <- structure(function
   Wmat[4,2] <- Wmat[2,4] <- 20
   Wmat[4,3] <- Wmat[3,4] <- 1
   w <- as.dist(Wmat)
-  res <- join.clusters2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1)
+  res <- clusterpath.l2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1)
   lvals <- unique(res$lambda)
   cvx <- cvxcheck(res,lambda=seq(0,max(lvals),l=8))
   library(plyr)
@@ -152,7 +152,7 @@ join.clusters2.general <- structure(function
     ms <- c()
     for(R in 1:20){
       tt <- system.time({
-        res <- join.clusters2.general(x,w,gamma=NA,
+        res <- clusterpath.l2.general(x,w,gamma=NA,
                                       lambda=0.001,
                                       lambda.factor=1.02,
                                       join.thresh=0.01,...)
@@ -193,7 +193,7 @@ join.clusters2.general <- structure(function
   (lstab <- do.call(rbind,lsres))
 })
 
-clustermat.l1.general <- structure(function
+clusterpath.l1.general <- structure(function
 ### Use the l2 descent problem with general weights to solve the
 ### weighted l1 problem, separately for each dimension. If the
 ### multicore package is installed each dimension will be processed on
@@ -206,13 +206,13 @@ clustermat.l1.general <- structure(function
  join.thresh=NULL,
 ### Threshold for fusion. If NULL take a small fraction of the nonzero
 ### differences found in the original points x. Passed to
-### join.clusters2.general.
+### clusterpath.l2.general.
  verbose=0,
-### Passed to join.clusters2.general.
+### Passed to clusterpath.l2.general.
  gamma=0,
 ### Used for calculating weights using \eqn{\exp(-\gamma ||x_i-x_j||^2)}.
  ...
-### passed to join.clusters2.general.
+### passed to clusterpath.l2.general.
  ){
   if(is.null(join.thresh)){
     dx <- dist(x)
@@ -222,7 +222,7 @@ clustermat.l1.general <- structure(function
   w <- exp(-gamma*dist(x)^2)
   LAPPLY <- if(require(multicore))mclapply else lapply
   dfs <- LAPPLY(1:ncol(x),function(j){
-    join.clusters2.general(x[,j],w=w,join.thresh=join.thresh,gamma=gamma,
+    clusterpath.l2.general(x[,j],w=w,join.thresh=join.thresh,gamma=gamma,
                            verbose=verbose,...)
   })
   ## need to add rows for lambda values not present in all dimensions
@@ -251,10 +251,10 @@ clustermat.l1.general <- structure(function
   library(clusterpath)
   sim <- gendata(D=2)
   ## compare with path algorithm
-  path <- clustermat.l1.id(sim$mat)
+  path <- clusterpath.l1.id(sim$mat)
   bpts <- castbreakpoints(path)
   p <- plot2d(bpts)
-  descent.pts <- clustermat.l1.general(sim$mat)
+  descent.pts <- clusterpath.l1.general(sim$mat)
   p+geom_point(aes(alpha.1,alpha.2,size=lambda/max(lambda)),data=descent.pts)
   desc <- melt(descent.pts[,1:4],measure=c("alpha.1","alpha.2"))
   if(require(latticeExtra)){
@@ -264,7 +264,7 @@ clustermat.l1.general <- structure(function
   library(ggplot2)
   ## compare with cvx
   gamma <- 0.1
-  descent.weights <- clustermat.l1.general(sim$mat,gamma=gamma,lambda=0.001)
+  descent.weights <- clusterpath.l1.general(sim$mat,gamma=gamma,lambda=0.001)
   lvals <- c(seq(min(descent.weights$lambda),0.02,l=4),
              seq(0.02,max(descent.weights$lambda),l=4))
   cvx <- cvxmod.cluster(sim$mat,lvals,norm=1,gamma=gamma)
@@ -275,7 +275,7 @@ clustermat.l1.general <- structure(function
     facet_grid(variable~.,scales="free")
 })
 
-clustermat.l1.id <- structure(function
+clusterpath.l1.id <- structure(function
 ### Cluster a matrix using the identity weights on each dimension. The
 ### L1 problem is separable, so we can process each dimension
 ### separately on each core if the multicore package is available.
@@ -299,7 +299,7 @@ clustermat.l1.id <- structure(function
 ### (only pathological cases).
 },ex=function(){
   x <- c(-3,-2,0,3,5)
-  df <- clustermat.l1.id(x)
+  df <- clusterpath.l1.id(x)
   head(df)
   mean(x)
   plot(df)
@@ -317,7 +317,7 @@ predict.clusterpath <- function
 ### based on calculated solution path breakpoints, find solutions at
 ### an individual point lambda.
 (object,
-### clusterpath data frame of breakpoints returned by clustermat.l1.id
+### clusterpath data frame of breakpoints returned by clusterpath.l1.id
  lambda=unique(object$lambda),
 ### lambda values for which we will calculate the optimal solutions.
  ...

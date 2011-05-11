@@ -10,7 +10,7 @@ before plotting using ggplot2.}
 plot2d(x)
 }
 \arguments{
-  \item{x}{clusterpath data frame as returned by clustermat.l1.id.}
+  \item{x}{clusterpath data frame as returned by clusterpath.l1.id.}
 }
 
 
@@ -22,6 +22,6 @@ plot2d(x)
 
 \examples{
 sim <- gendata(N=5,D=2,K=2)
-df <- clustermat.l1.id(sim$mat)
+df <- clusterpath.l1.id(sim$mat)
 plot2d(df)
 }

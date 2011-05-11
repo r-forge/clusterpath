@@ -8,7 +8,7 @@ frame will represent a breakpoint in the path.}
 path.animation(df, outdir = tempfile(), title = "Calculation of the path in 2d")
 }
 \arguments{
-  \item{df}{Result of clustermat.l1.id.}
+  \item{df}{Result of clusterpath.l1.id.}
   \item{outdir}{Subdirectory for plot files, to be created.}
   \item{title}{Title for the animation.}
 }
@@ -25,6 +25,6 @@ path.animation(df, outdir = tempfile(), title = "Calculation of the path in 2d")
 sim <- gendata(N <- 5,2,2,0.1)
 colnames(sim$mat) <- c("height","length")
 xyplot(length~height,data.frame(sim$mat,row=1:N),aspect="iso",group=row)
-df <- clustermat.l1.id(sim$mat)
+df <- clusterpath.l1.id(sim$mat)
 ##path.animation(df)
 }

@@ -21,11 +21,6 @@ halfmoon.cluster <- function(seed,N=150,noise=0.5,...){
   ##print(xyplot(y~x,pts,groups=class,aspect="iso"))
   ##browser()
   m <- pts[,c("x","y")]
-  ##   add.seconds <- system.time({
-  ##     path <- join.clusters2.general(m,check.splits=0,
-  ##                                    join.thresh=0.05,opt.thresh=0.1,
-  ##                                    lambda.factor=1.05,gamma=2,...)
-  ##   })["elapsed"]
   path <- NULL
   guess <- cluster.points(m,2,path=path,...)
   rows <- guess$method=="clusterpath"

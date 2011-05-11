@@ -1,10 +1,10 @@
-\name{join.clusters2.general}
-\alias{join.clusters2.general}
-\title{join clusters2 general}
+\name{clusterpath.l2.general}
+\alias{clusterpath.l2.general}
+\title{clusterpath l2 general}
 \description{Cluster a matrix of data using the L2 penalty and weights that
 potentially depend on another matrix.}
 \usage{
-join.clusters2.general(x, w = x, gamma = 1, lambda = 0.01, join.thresh = NULL, opt.thresh = 0.001, lambda.factor = 1.05, smooth = 0, maxit = 1000, linesearch.freq = 2, linesearch.points = 10, check.splits = 1, target.cluster = 0, verbose = 0, ...)
+clusterpath.l2.general(x, w = x, gamma = 1, lambda = 0.01, join.thresh = NULL, opt.thresh = 0.001, lambda.factor = 1.05, smooth = 0, maxit = 1000, linesearch.freq = 2, linesearch.points = 10, check.splits = 1, target.cluster = 0, verbose = 0, ...)
 }
 \arguments{
   \item{x}{\eqn{n\times p} matrix of data to cluster}
@@ -68,7 +68,7 @@ Wmat[4,1] <- Wmat[1,4] <- 1
 Wmat[4,2] <- Wmat[2,4] <- 20
 Wmat[4,3] <- Wmat[3,4] <- 1
 w <- as.dist(Wmat)
-res <- join.clusters2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1)
+res <- clusterpath.l2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1)
 lvals <- unique(res$lambda)
 cvx <- cvxcheck(res,lambda=seq(0,max(lvals),l=8))
 library(plyr)
@@ -93,7 +93,7 @@ with.timelabels <- function(...){
   ms <- c()
   for(R in 1:20){
     tt <- system.time({
-      res <- join.clusters2.general(x,w,gamma=NA,
+      res <- clusterpath.l2.general(x,w,gamma=NA,
                                     lambda=0.001,
                                     lambda.factor=1.02,
                                     join.thresh=0.01,...)

@@ -7,7 +7,7 @@ an individual point lambda.}
 \method{predict}{clusterpath}(object, lambda = unique(object$lambda), ...)
 }
 \arguments{
-  \item{object}{clusterpath data frame of breakpoints returned by clustermat.l1.id}
+  \item{object}{clusterpath data frame of breakpoints returned by clusterpath.l1.id}
   \item{lambda}{lambda values for which we will calculate the optimal solutions.}
   \item{\dots}{ignored.}
 }

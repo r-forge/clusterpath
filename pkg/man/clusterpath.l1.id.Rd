@@ -1,11 +1,11 @@
-\name{clustermat.l1.id}
-\alias{clustermat.l1.id}
-\title{clustermat l1 id}
+\name{clusterpath.l1.id}
+\alias{clusterpath.l1.id}
+\title{clusterpath l1 id}
 \description{Cluster a matrix using the identity weights on each dimension. The
 L1 problem is separable, so we can process each dimension
 separately on each core if the multicore package is available.}
 \usage{
-clustermat.l1.id(x)
+clusterpath.l1.id(x)
 }
 \arguments{
   \item{x}{Matrix of data.}
@@ -22,7 +22,7 @@ when there are multiple lines that join at the exact same time
 
 \examples{
 x <- c(-3,-2,0,3,5)
-df <- clustermat.l1.id(x)
+df <- clusterpath.l1.id(x)
 head(df)
 mean(x)
 plot(df)

@@ -6,7 +6,7 @@
 clusterings <-
   list(list("old spectral clusterpath",function(m,k,verbose=0,...){
     V <- get.old.best(m,k,exponential.eigenvectors)
-    path <- join.clusters2.general(V,verbose=verbose,check.split=0,lambda=1e-6,
+    path <- clusterpath.l2.general(V,verbose=verbose,check.split=0,lambda=1e-6,
                                    join.thresh=1e-3)
     cut.clusterpath.labels(path,k)
   }),list("old spectral exp kmeans",function(m,k,verbose=0,...){
@@ -35,7 +35,7 @@ clusterings <-
     library(clusterpath)
     if(is.null(path))
       {##option to provide your own clusterpath tree for speed
-        path <- join.clusters2.general(m,check.splits=0,verbose=verbose,
+        path <- clusterpath.l2.general(m,check.splits=0,verbose=verbose,
                                        join.thresh=0.05,opt.thresh=0.1,
                                        lambda.factor=1.05,gamma=gamma,
                                        target.cluster=k,
