@@ -9,8 +9,15 @@ clusterpath.l2 <- structure(function
   clusterpath.l2.general(x=x,w=x,check.splits=0,...)
 },ex=function(){
   ## cluster the iris data
-  path <- clusterpath.l2.general(scale(iris[,1:4]),gamma=1)
+  path <- clusterpath.l2(iris[,1:4],gamma=1)
   plot(path,groups=iris$Species)
+  ## compare with l1 path
+  bpts <- clusterpath.l1.id(iris[,1:4])
+  plot(bpts)
+  bpts4d <- castbreakpoints(bpts)
+  solutions <- rbind(bpts4d,path)
+  ggplot(solutions,aes(Petal.Length,Petal.Width))+
+    geom_path(aes(group=interaction(row,solver),colour=norm))
 })
 
 clusterpath.l2.general <- structure(function

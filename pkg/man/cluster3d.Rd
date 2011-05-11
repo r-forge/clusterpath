@@ -20,5 +20,9 @@ cluster3d(x, gamma = 0)
 \examples{
 sim <- gendata(D=3,K=5,N=10,SD=0.1)
 L <- cluster3d(sim$mat)
-L2 <- cluster3d(sim$mat,3)
+L2 <- cluster3d(sim$mat,gamma=3)
+
+iris3 <- iris[,1:3]
+cluster3d(iris3)
+cluster3d(iris3,gamma=1)
 }

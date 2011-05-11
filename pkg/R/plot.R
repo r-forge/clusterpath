@@ -26,12 +26,24 @@ alphacolnames <- function(x){
   else colnames(x)
 }
 
-### plot the path in rgl 3d as lines
-plotpath3d <- function(path,...){
+### plot the path in rgl 3d as lines. uses only first 3 variables by default
+plotpath3d <- structure(function(path,vars=1:3,...){
   for(i in unique(path$row)){
-    plot3d(subset(path,row==i)[,1:3],add=TRUE,type="l",...)
+    plot3d(subset(path,row==i)[,vars],add=TRUE,type="l",...)
   }
-}
+},ex=function(){
+  ## calculate the l1 clusterpath
+  breakpoints <- clusterpath.l1.id(iris[,1:4])
+  plot(breakpoints)
+  ## calculate the weighted l2 clusterpath
+  path <- clusterpath.l2(iris[,1:4],gamma=1)
+  plot(path,groups=iris$Species)
+  require(rgl)
+  plot3d(iris[,1:3],type="p",box=FALSE,aspect=TRUE)
+  plotpath3d(path,col="blue")
+  bpts4d <- castbreakpoints(breakpoints)
+  plotpath3d(bpts4d,col="orange")
+})
 
 cluster3d <- structure(function
 ### Cluster a matrix of 3d points using the l1 and l2 algorithms.
@@ -57,7 +69,11 @@ cluster3d <- structure(function
 },ex=function(){
   sim <- gendata(D=3,K=5,N=10,SD=0.1)
   L <- cluster3d(sim$mat)
-  L2 <- cluster3d(sim$mat,3)
+  L2 <- cluster3d(sim$mat,gamma=3)
+
+  iris3 <- iris[,1:3]
+  cluster3d(iris3)
+  cluster3d(iris3,gamma=1)
 })
 
 plot.clusterpath <- structure(function
