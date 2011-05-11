@@ -4,14 +4,12 @@
 \description{Call this function with a matrix m and number of clusters k to run
 several clustering algorithms on the matrix.}
 \usage{
-cluster.points(m, k, clusterings = clusterings, ...)
+cluster.points(m, k, ...)
 }
 \arguments{
   \item{m}{
 }
   \item{k}{
-}
-  \item{clusterings}{
 }
   \item{\dots}{
 }
@@ -26,8 +24,8 @@ cluster.points(m, k, clusterings = clusterings, ...)
 
 \examples{
 library(clusterpath)
-jiris <- jitter(as.matrix(iris[,1:4]))
-iclust <- cluster.points(jiris,3,verbose=1)
+iriSc <- scale(as.matrix(iris[,1:4]))
+iclust <- cluster.points(iriSc,3,verbose=1)
 splom(~iclust[1:4]|method,iclust,groups=guess)
 table(iclust$guess,rep(iris$Species,nlevels(iclust$method)),iclust$method)
 }

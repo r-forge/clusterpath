@@ -58,23 +58,20 @@ clusterings <-
     Mclust(m,k)$classification
   }))
 
-### now you can type cluster.funs$clusterpath(matrix) for example
-cluster.funs <- lapply(clusterings,"[[",2)
-names(cluster.funs) <- sapply(clusterings,"[[",1)
-
 ### Call this function with a matrix m and number of clusters k to run
 ### several clustering algorithms on the matrix.
-cluster.points <- structure(function(m,k,clusterings=clusterings,...){
+cluster.points <- structure(function(m,k,...){
   colnames(m) <- alphacolnames(m)
   call.do <- function(args,what)do.call(what,args)
   ## return results of all methods
-  d <- do.call(rbind,lapply(clusterings,call.do,function(method,FUN){
+  cluster.and.time <- function(method,FUN){
     print(method)
     seconds <- system.time({
       guess <- FUN(as.matrix(m),k,...)
     })["elapsed"]
     data.frame(m,row=seq_along(guess),method,guess,seconds,row.names=NULL)
-  }))
+  }
+  d <- do.call(rbind,lapply(clusterings,call.do,cluster.and.time))
   ##annotate for plotting
   attr(d,"data") <- m
   attr(d,"alphacolnames") <- alphacolnames(m)
@@ -82,8 +79,8 @@ cluster.points <- structure(function(m,k,clusterings=clusterings,...){
 ### A data frame with timings and guesses
 },ex=function(){
   library(clusterpath)
-  jiris <- jitter(as.matrix(iris[,1:4]))
-  iclust <- cluster.points(jiris,3,verbose=1)
+  iriSc <- scale(as.matrix(iris[,1:4]))
+  iclust <- cluster.points(iriSc,3,verbose=1)
   splom(~iclust[1:4]|method,iclust,groups=guess)
   table(iclust$guess,rep(iris$Species,nlevels(iclust$method)),iclust$method)
 })
