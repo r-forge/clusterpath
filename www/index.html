@@ -103,6 +103,23 @@ cluster3d(iris[,1:3],gamma=1)
 
 </table>
 
+<h2>Troubleshooting</h2>
+
+<p>The <tt>clusterpath</tt> package depends on <tt>Rcpp</tt>. If you
+can't seem to get <tt>Rcpp</tt> to install, perhaps you need to
+install a more recent version of R:</p>
+
+<pre>
+cd
+mkdir R
+wget ftp://ftp.stat.math.ethz.ch/Software/R/R-devel.tar.gz
+tar -xf R-devel.tar.gz
+cd R-devel
+./configure --prefix=$HOME
+make
+make install
+</pre>
+
 <p>Back to 
 <a href="http://r-forge.r-project.org/projects/clusterpath/">the
 R-Forge project page</a>.</p>
