@@ -1,6 +1,5 @@
-/* -*- compile-command: "cd ../.. && make pkg.test"; compilation-read-command: nil; compilation-search-path: (quote (nil "/nas/home1/h/hocking/bioviz/cluster/src/clusterpath/src")) -*- */ 
 #include <Rcpp.h>
-#include "clusterpath.h"
+#include "l1.h"
 #include "l2.h"
  
 using namespace Rcpp ;

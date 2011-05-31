@@ -1,8 +1,7 @@
-/* -*- compile-command: "make test.out"; compilation-read-command: nil; gdb-many-windows: 1 -*- */ 
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-#include "clusterpath.h"
+#include "l1.h"
 
 #define NullEvent ((Events::iterator)0)
 #define NEW_EVENT_THRESH 1e-10
