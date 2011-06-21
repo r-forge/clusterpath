@@ -1,0 +1,435 @@
+\documentclass{beamer}
+\usepackage{amsmath,amssymb}
+\usetheme{Madrid}
+\usepackage{hyperref}
+%\usepackage{xypic}
+\usepackage{tikz} 
+\usepackage[nogin]{Sweave}
+\SweaveOpts{width=5,height=3.25,keep.source=TRUE}
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+\usepackage{graphicx}
+
+\newcommand{\sign}{\operatorname{sign}}
+\begin{document}
+
+  \title[Clusterpath]{
+    Clusterpath: \\an algorithm for clustering using convex fusion penalties}
+  \institute{INRIA Paris}
+  \author[Toby Dylan Hocking \emph{et al.}]{Toby Dylan Hocking\\
+{\small joint work with Armand Joulin, Francis Bach, and Jean-Philippe Vert}}
+\date{1 July 2011}
+
+\maketitle
+\section[Outline]{}
+
+\frame{\tableofcontents}
+
+\newcommand{\framet}[2]{\frame{\frametitle{#1}
+  \begin{itemize}
+      #2
+    \end{itemize}
+}}
+
+\newcommand{\picframe}[1]{
+  \frame[plain]{
+%    \includegraphics[width=\textwidth]{#1}
+  }
+}
+\newcommand{\norm}[1]{|\!|#1|\!|}
+\newcommand{\minof}[1]{
+  \underset{#1}{\min}
+}
+
+\newcommand{\RR}{\mathbb R}
+
+\section{Introduction to clustering using the fused lasso}
+
+\begin{frame} \frametitle{Geometric interpretation with identity
+    weights}
+    \begin{minipage}{2in}
+      \begin{itemize}
+      \item Let $X\in\RR^{3\times 2}$.
+      \item $n=3$ points.
+      \item $p=2$ dimensions.
+      \item Approximate $X$ using $\alpha$: $ \min_\alpha||\alpha-X||^2_F $
+      \item Constrain the total distance between every pair of points:
+        $\sum_{i<j}||\alpha_i-\alpha_j||_q \leq t$
+        (grey lines)
+      \end{itemize}
+  \end{minipage}
+  \begin{minipage}{2.5in}
+<<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3,height=3.25>>=
+
+library(clusterpath)
+### Figure 1. geometric interpretation
+set.seed(3)
+x <- replicate(2,rnorm(3))
+pts <- data.frame(alpha=x,row=1:nrow(x))
+getlines <- function(x){
+  require(foreach)
+  N <- nrow(x)
+  foreach(i=1:(N-1),.combine=rbind)%do%{
+    foreach(j=(i+1):N,.combine=rbind)%do%{
+      start <- x[i,]
+      end <- x[j,]
+      data.frame(start.1=start[1],end.1=end[1],start.2=start[2],end.2=end[2],
+                 norm=factor(2))
+    }
+  }
+}
+getpolys <- function(path,l=0){
+  gamma <- as.numeric(as.character(path$gamma[1]))
+  W <- as.matrix(exp(-gamma*dist(attr(path,"weight.pts"))))
+  alpha <- subset(path,lambda==l)[,c("row",attr(path,"alphacolnames"))]
+  clusters <- unique(alpha[,-1])
+  N <- nrow(clusters)
+  equal <- function(u)apply(alpha[,-1],1,function(v)all(v==u))
+  polys <- data.frame()
+  ws <- data.frame()
+  width <- data.frame()
+  for(i in 1:(N-1))for(j in (i+1):N){
+    ci <- as.matrix(clusters[i,])
+    cj <- as.matrix(clusters[j,])
+    m <- (ci[2]-cj[2])/(ci[1]-cj[1])
+    rects <- expand.grid(i=alpha[equal(ci),"row"],j=alpha[equal(cj),"row"])
+    rects$wij <- W[as.matrix(rects)]
+    total <- sum(rects$wij)
+    ## this is the horizontal displacement from ci
+    intercept <- ci[2]-ci[1]*m
+    int2 <- ci[1]/m+ci[2]
+    m2 <- -1/m
+    iperp <- function(x)m2*(x-ci[1])+ci[2]
+    jperp <- function(x)m2*(x-cj[1])+cj[2]
+    xfound <- ci[1]-sqrt(((total/2)^2)/(m2^2+1))
+    xoff <- abs(ci[1]-xfound)
+    xvals <- xoff*c(-1,1)+ci[1]
+    ## this is the angle of the rectangle from the horizontal
+    wsum <- c(0,cumsum(rects$wij))
+    rate <- xoff/total*2
+    ix <- function(w)w*rate+ci[1]-xoff
+    jx <- function(w)w*rate+cj[1]-xoff
+    for(k in 1:(length(wsum)-1)){
+      IX <- c(ix(wsum[k]),ix(wsum[k+1]))
+      JX <- c(jx(wsum[k+1]),jx(wsum[k]))
+      m <- cbind(c(IX,JX),c(iperp(IX),jperp(JX)))
+      row <- t(c(start=colMeans(m[c(1,4),]),end=colMeans(m[c(2,3),])))
+      width <- rbind(width,data.frame(row,rect.num=k))
+      ij <- with(rects,sprintf("%d%d",i[k],j[k]))
+      ws <- rbind(ws,data.frame(alpha=t(colMeans(m)),
+                                label=sprintf("\\tiny$w_{%s}$",ij)))
+      polys <- rbind(polys,data.frame(alpha=m,rect.num=factor(k),
+                    pair=ij,row.names=NULL))
+    }
+  }
+  list(polys=polys,clusters=clusters,ws=ws,width=width)
+}
+idname <- "Identity weights, $t=\\Omega(X)$"
+line.df <- data.frame(getlines(x),figure=factor(idname))
+path <- join.clusters2.general(x,verbose=1,join.thresh=0.01,gamma=1.3)
+lval <- path$lambda[300]
+poly.list <- getpolys(path,lval)
+jointitle <- sprintf("Decreasing weights after join, $t<\\Omega(X)$")
+add_polygon <- function(p,L,figure){
+  p+
+  geom_polygon(aes(group=interaction(pair,rect.num)),
+               data=data.frame(L$polys,figure),
+               fill="grey",colour="white",lwd=1.2)+
+  geom_segment(aes(start1,start2,xend=end1,yend=end2),
+               data=data.frame(L$width,figure),
+               colour="white")+
+  geom_text(aes(label=label),
+            data=data.frame(L$ws,figure))
+}
+apart <- "Decreasing weights, $t=\\Omega(X)$"
+apart.list <- getpolys(path,path$lambda[1])
+outside <- data.frame(start=rbind(x,x),figure=idname,
+                      end.1=c(x[1,1],x[1,1],x[3,1],x[3,1],x[3,1],x[3,1]),
+                      end.2=c(x[2,2],x[2,2],x[2,2],x[1,2],x[2,2],x[1,2]))
+segs <- rbind(outside,line.df[,names(outside)])
+getcenter <- function(d,ann,xoff=0,yoff=0){
+  with(d,data.frame(x=(start.1+end.1)/2+xoff,y=(start.2+end.2)/2+yoff,
+                    label=sprintf("\\scriptsize$\\ell_%s$",ann),
+                    figure=idname))
+}
+inf <- getcenter(outside,"\\infty")[c(1,4,5),]
+inf$y[1] <- inf$y[1]+0.2
+inf$x[-1] <- inf$x[-1]+0.2
+inf$y[3] <- inf$y[3]+0.1
+norms <- rbind(getcenter(line.df,"2"),getcenter(outside,"1"),inf)
+norms$y[6] <- norms$y[6]+0.05
+norms$y[8] <- norms$y[8]+0.1
+library(ggplot2)
+theme_set(theme_bw())
+p <- ggplot(NULL,aes(alpha.1,alpha.2))+
+  geom_segment(aes(start.1,start.2,xend=end.1,yend=end.2),
+               data=segs,lwd=2,colour="grey")+
+  geom_text(aes(x,y,label=label),data=norms)+
+  coord_equal()+
+  scale_x_continuous("$\\alpha^1$",breaks=c(-10))+
+  scale_y_continuous("$\\alpha^2$",breaks=c(-10))+
+  geom_point(data=pts,pch=21,fill="white")
+print(p)
+@ 
+\end{minipage}
+
+\end{frame}
+
+\begin{frame} \frametitle{Decreasing weights}
+
+<<>>=
+p2 <- add_polygon(p,apart.list,apart)+
+  geom_path(aes(group=row),data=data.frame(path,figure=jointitle),
+            subset=.(lambda<=lval))
+p3 <- add_polygon(p2,poly.list,jointitle)+
+  geom_point(data=data.frame(poly.list$clusters,figure=jointitle))+
+  coord_equal()+
+  geom_text(aes(label=label),
+            data=data.frame(alpha.1=c(-1,x[2,1]-0.05,0.35),
+              alpha.2=c(-1.25,0.35,x[3,2]),
+              label=sprintf("\\scriptsize$X_%d$",1:3),
+              figure=rep(c(jointitle,idname,apart),each=3)))+
+  facet_grid(.~figure)+
+  geom_text(aes(label=label),
+            data.frame(alpha.1=c(-0.8,-0.5),alpha.2=c(-1.05,0.1),
+                       figure=jointitle,
+                       label=c("\\scriptsize$\\alpha_1$",
+                         "\\scriptsize$\\alpha_{C}=\\alpha_2=\\alpha_3$")))
+levs <- unique(unlist(lapply(p3$layers,function(l)levels(l$data$figure))))
+allpts <- do.call(rbind,lapply(levs,function(l)data.frame(pts,figure=l)))
+p4 <- p3+geom_point(data=allpts,pch=21,fill="white")+
+ scale_x_continuous("",breaks=c(-10))+
+ scale_y_continuous("",breaks=c(-10))
+@  
+
+\end{frame}
+
+\framet{Framing clustering as an optimization problem}{
+\item Many interesting problems in statistics can be posed as
+  optimization problems, in the form
+$$
+\minof{\alpha}\ 
+\underbrace{f(\alpha)}_{\text{cost}} = 
+\underbrace{l(\alpha)}_{\text{loss}} + 
+\underbrace{\lambda}_{\text{Lagrange multiplier}}
+\underbrace{\Omega(\alpha)}_{\text{penalty}}
+ $$
+where $\alpha$ is a vector or matrix of variables.
+\item For example, $k$-means clustering corresponds to
+  $\alpha,X\in\RR^{n\times p}$ a matrix of variables with
+  $l(\alpha)=\norm{\alpha-X}^2_F$ the square loss and $\Omega(\alpha)$
+  is the number of distinct $\alpha_i$. When $\lambda$ is 0, this is
+  the same as $n$-means, and the number of distinct clusters decreases
+  as $\lambda$ increases.}
+
+\frame{
+\frametitle{Use the pairwise weighted fusion penalty}
+We cluster a matrix $X\in\RR^{n\times p}$ using 
+$$
+\alpha^*(\lambda)=\underset{\alpha}{\operatorname{argmin}}\ 
+f(\alpha) = 
+l(\alpha) + 
+\lambda
+\Omega(\alpha)
+$$
+$$l(\alpha)=\frac 1 2 \norm{\alpha-X}^2_F$$
+  $$\Omega(\alpha)=\sum_{i<j} \norm{\alpha_i - \alpha_j}_q w_{ij}$$
+  where $\alpha\in\RR^{n\times p}$, $\alpha_i\in\RR^p$,
+  $w\in\RR^{n\times n}$ is a upper triangular weight matrix between
+  points, and $\norm{\cdot}_q$ is a convex sparsity-inducing norm
+  ($q\in\{1,2,\infty\}$).
+
+%%   With properly chosen weights $w$, we can enforce spatial coherence
+%%   in the clustered cells $\alpha^*$:
+%% $$w_{ij} = \exp\left(-\gamma \norm{Y_i - Y_j}^2_2\right)$$
+%% where $\gamma\geq 0$ and $Y_i$ is the spatial coordinate vector of
+%% cell $i$.
+}
+
+\framet{Solutions at the ends of the path}{
+\item For any weights $w$ and norm $q$, the following 2 solutions are
+  satisfied.
+\item For $\lambda=0$, the cost function becomes
+  $f(\alpha)=l(\alpha)=\frac 1 2 \norm{\alpha-X}_F^2$, thus
+  $\alpha^*=X$. The points are all apart and
+  unclustered. This is the beginning of the path.
+\item As $\lambda$ increases, the differences between $\alpha_i$ get
+  penalized more and more, until a certain $\lambda_{\text{max}}$
+  where we have no differences between the $\alpha_i$. Thus the
+  solution is $\alpha^* = 
+\left[\begin{array}{ccc}\mu^* & \cdots & \mu^*\end{array}\right]^T$ such that
+$$\mu^* = \minof{\mu\in\RR} \ \frac 1 2 \sum_{i=1}^n (X_i-\mu)^2 =
+\bar X$$
+}
+
+\framet{Formulation as a constrained optimization problem}{ 
+\item Fix weights $w$ and norm $q$.
+\item By convex duality, for any given $\lambda\geq 0$, there exists
+  $t$ and $s$ such that $\alpha^*$ is the same as the
+  solution to the following constrained optimization problem:
+  $$\begin{array}{rl}
+    \text{minimize} & l(\alpha) \\
+    \text{subject to} & \Omega(\alpha) \leq t
+  \end{array}$$
+  or equivalently
+  $$\begin{array}{rl}
+    \text{minimize} & l(\alpha) \\
+    \text{subject to} & \frac{\Omega(\alpha)}{\Omega(X)} = 
+      \frac{t}{\Omega(X)} \leq s
+  \end{array}$$
+\item This reformulation in terms of the difference $s$ makes it easy
+  to characterize all the unique solutions $0\leq s \leq 1$, and find
+  them using the simple cvxmod convex solver. \url{http://cvxmod.net/}
+}
+
+\frame{
+\frametitle{A small example using the L1 norm and identity weights}
+If we take  a toy example with $X\in\RR^{10\times 2}$,
+and the penalty function  
+$$\Omega(\alpha) = 
+\sum_{i<j} \norm{\alpha_i-\alpha_j}_1 =
+\sum_{i<j} \sum_{k=1}^2 |\alpha_{ik}-\alpha_{jk}|
+$$ then using cvxmod we have solutions that
+look like this:
+%\includegraphics[width=\textwidth]{cover}
+}
+
+%% \frame{
+%%   \frametitle{Clustering using several different norms and weights}
+%%   \includegraphics[width=\textwidth]{cvxtest}
+%% }
+
+\section{An efficient path algorithm for the L1 solutions}
+
+\framet{Analysis of L1 solutions with identity weights}{
+\item The penalty function 
+  is $$\Omega(\alpha) = \sum_{i<j} \norm{\alpha_i-\alpha_j}_1 
+  = \sum_{i<j} \sum_{k=1}^p |\alpha_{ik}-\alpha_{jk}|= \sum_{k=1}^p
+  \sum_{i<j} |\alpha_{ik}-\alpha_{jk}|$$
+\item The cost function is separable on variables, so all we have to
+  do is solve $p$ problems of the form
+$$\minof{\alpha_k\in\RR^n}\ \frac 1 2 \sum_{i=1}^n (\alpha_{i}-X_{i})^2
++\lambda \sum_{i<j} |\alpha_{i}-\alpha_{j}|$$
+(one for each variable $k$)
+\item To solve this problem, we can use a LARS-like path algorithm as
+  in Hoefling (2009) ``A path algorithm for the Fused Lasso Signal
+  Approximator.''
+\item Our problem is a special case and the algorithm can be simplified for
+  speedups.
+}
+
+\framet{Optimality conditions for the L1 problem}{
+\item Using subdifferentials, a sufficient optimality condition
+  $0\in\partial f(\alpha)$ can be written, for $i=1,\ldots,n$:
+$$
+0 = \alpha_i - X_i + \lambda \sum_{j\neq i \atop \alpha_i\neq\alpha_j}w_{ij}
+  \operatorname{sign}({\alpha_i-\alpha_j}) + \lambda \sum_{j\neq i \atop \alpha_i  = \alpha_j}w_{ij} \beta_{ij}\,,
+$$
+with $|\beta_{ij}|\leq 1$ and $\beta_{ij} = -\beta_{ji}$ for any
+$i\neq j$ with $\alpha_i=\alpha_j$.
+\item For the identity weights $w_{ij}=1$ this simplifies to
+$$
+0 = \alpha_i - X_i + \lambda \sum_{j\neq i \atop \alpha_i\neq\alpha_j}
+  \operatorname{sign}({\alpha_i-\alpha_j}) + \lambda \sum_{j\neq i \atop \alpha_i  = \alpha_j} \beta_{ij}\,,
+$$
+}
+
+\frame{ \frametitle{Lemma: for the identity weights, there is a simple
+    expression for cluster velocities} By summing the optimality
+  conditions over a single cluster, and taking the derivative with
+  respect to $\lambda$, we obtain the following expression for the
+  velocity of that cluster:
+\begin{eqnarray*}
+\frac{d\, \alpha_C}{d\,\lambda} =  v_C 
+&=& \frac 1 {|C|} \sum_{i\in C}\sum_{j\not\in C}\sign(\alpha_j-\alpha_i)\\
+&=& \frac 1 {|C|} \sum_{i\in C}\left[\sum_{j\in \overline C}1-\sum_{j\in \underline C}1\right]\\
+&=& |\overline C| - |\underline C|
+\end{eqnarray*}
+where $\overline C$ and $\underline C$ are the sets of coefficients
+respectively above and below the cluster $C$.}
+
+\frame{ \frametitle{Theorem: for the identity weights, as $\lambda$
+    increases, clusters do not split} Proof: by contradiction. Assume
+  at $\lambda_0$, cluster $C$ splits into $C_1$ and $C_2$, with
+  $\alpha_1>\alpha_2$. Using the previous lemma, we have the following
+  cluster velocities:
+\begin{eqnarray*}
+  v_1 &=& |\overline C| - |C_2| - |\underline C|\\
+  v_2 &=& |\overline C| + |C_1| - |\underline C|
+\end{eqnarray*}
+Clearly, $v_1<v_2$. This contradicts our hypothesis that
+$\alpha_1>\alpha_2$. Thus we must conclude that clusters do not split.
+
+This is important, because checking for splits is the major bottleneck
+of the more general fused lasso path algorithm.}
+
+\framet{Outline of the path algorithm}{
+\item For $\lambda=0$ the solution $\alpha=X$ is optimal. We
+  initialize the clusters $C_i = \{i\}$ and coefficients $\alpha_i =
+  X_i$ for all $i$.
+\item As $\lambda$ increases, the solutions will follow straight
+  lines until they hit.
+\item Taking the derivative of the optimality condition with respect
+  to $\lambda$ leads to the following expression for the velocity of
+  the initial clusters:
+$$v_i = \sum_{j\neq i}w_{ij}\sign(\alpha_j-\alpha_i)$$
+\item When 2 clusters $C_1$ and $C_2$ hit, they will merge to form a
+  new cluster $C = C_1\cup C_2$ and take a new velocity:
+$$v_C = \frac{
+|C_1|v_1 + |C_2|v_2
+}{
+|C_1|+|C_2|
+}$$
+\item Stop when all the points merge at the mean $\bar X$.
+}
+
+% \begin{frame}
+%   \frametitle{Efficient data structure used to calculate the path}
+%   \begin{itemize}
+% \item Join events are held in a sorted red-black tree (not shown) for
+%   $O(1)$ event deletion and $O(\log n)$ event insertion.
+%  \begin{displaymath}
+%   \xymatrix{
+%     &\text{Clusters} & \text{Events}\\
+%               & C_1\ar@{<->}[d]\ar@{<->}[r] & E_1 \\
+% C_{\text{new}}\ar@{.>}[r]\ar@{.>}[rd]\ar@{<.>}[ur]\ar@{<.>}[ddr]
+% & C_2\ar@{<->}[d]\ar@{<->}[r]              &  E_2\\
+%               & C_3\ar@{<->}[d]\ar@{<->}[r]              &  E_3\\
+%               & C_4              &  
+% }
+% \end{displaymath}
+% \item With $n-1$ join events each at a cost of $\log n$, we expect the
+%   algorithm to exhibit complexity of $O(n\log n)$.
+% \end{frame}
+
+\framet{The path algorithm (lines) agrees with cvxmod (dots)}{
+\item Toy example with $n=10$ points in $p=1$ dimension.
+}
+
+\section{Conclusions and future work}
+
+\framet{Conclusions and future work}{
+\item Using identity weights with the L1 norm, we have agglomerative
+  clustering and an $O(n\log n)$ algorithm.
+\item Agglomerative clustering for which other weights and norms?
+\item Applications in solving
+  $\min_\beta||Y-X\beta||+\lambda\Omega(\beta)$ using proximal methods.
+\item Can use other weights to alter the path of solutions.
+}
+
+\end{document}
