@@ -145,6 +145,7 @@ cvxmod.cluster <- structure(function
   sim <- gendata(N=5,D=2,K=2,SD=0.5)
   cvx <- cvxmod.cluster(sim$mat,norm=2,gamma=0.5,verbose=TRUE)
   ggplot(cvx,aes(alpha.1,alpha.2))+
+    geom_path(aes(group=row),colour="grey")+
     geom_point(aes(size=s),alpha=1/2)+
     opts(main="cvxmod solutions for the l2 problem using decreasing weights")+
     coord_equal()

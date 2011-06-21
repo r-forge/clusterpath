@@ -286,17 +286,24 @@ clusterpath.l1.id <- structure(function
 ### Cluster a matrix using the identity weights on each dimension. The
 ### L1 problem is separable, so we can process each dimension
 ### separately on each core if the multicore package is available.
-(x
+(x,
 ### Matrix of data.
+ LAPPLY=if(require(multicore))mclapply else lapply
+### Function to use to combine the results of each dimension. Defaults
+### to mclapply for parallel processing if the multicore package is
+### available, otherwise the standard lapply.
  ){
-  LAPPLY <- if(require(multicore))mclapply else lapply
   x <- as.matrix(x)
   dfs <- LAPPLY(1:ncol(x),function(k){
     L <- .Call("join_clusters_convert",x[,k],PACKAGE="clusterpath")
-    data.frame(L[1:2],row=factor(L$i+1),col=factor(k))
+    data.frame(L[1:2],
+               row=factor(L$i+1),
+               col=factor(k),
+               gamma=factor(0),
+               norm=factor(1),
+               solver=factor("path"))
   })
-  df <- data.frame(do.call(rbind,dfs),gamma=factor(0),norm=factor(1),
-                   solver=factor("path"))
+  df <- do.call(rbind,dfs)
   if(!is.null(rownames(x)))levels(df$row) <- rownames(x)
   levels(df$col) <- alphacolnames(x)
   d <- structure(df,data=x,class=c("l1","clusterpath","data.frame"))

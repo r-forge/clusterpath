@@ -247,9 +247,13 @@ path.animation <- structure(function
   ani.stop()
 },ex=function(){
   ## several clusters
-  sim <- gendata(N <- 5,2,2,0.1)
+  sim <- gendata(5,2,2,0.1)
   colnames(sim$mat) <- c("height","length")
-  xyplot(length~height,data.frame(sim$mat,row=1:N),aspect="iso",group=row)
+  plot(sim$mat)
   df <- clusterpath.l1.id(sim$mat)
-  ##path.animation(df)
+  path.animation(df)
+
+  iris2 <- iris[,c("Petal.Length","Petal.Width")]
+  iris.path <- clusterpath.l1.id(iris2)
+  path.animation(iris.path)
 })
