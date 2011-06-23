@@ -1,3 +1,4 @@
+% -*- mode: Rnw -*-
 \documentclass{beamer}
     %tdh from http://stackoverflow.com/questions/2320776/remove-the-slide-count-from-beamer-footer
     \usetheme[secheader]{Madrid}
@@ -232,29 +233,7 @@ print(interpretation(
 }
 @ 
 
-\begin{frame} \frametitle{Geometric interpretation of penalty with general
-    weights}
-    \begin{minipage}{2in}
-      \begin{itemize}
-      \item Let $X\in\RR^{3\times 2}$.
-      \item $n=3$ points.
-      \item $p=2$ dimensions.
-      \item Approximate $X$ using $\alpha$: $ \min_\alpha||\alpha-X||^2_F $
-      \item Constrain the total distance between every pair of points:
-        $\sum_{i<j}||\alpha_i-\alpha_j||_q \leq t$
-        (grey lines)
-      \end{itemize}
-  \end{minipage}
-  \begin{minipage}{2.5in}
-<<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3,height=3.25>>=
-plotpolys(0.3)
-@  
-
-\end{minipage}
-
-\end{frame}
-
-
+ANIMATION(rects)
 
 <<fig=FALSE,echo=FALSE,results=hide>>=
 set.seed(19) 
@@ -292,9 +271,7 @@ ggplot(path,aes(alpha.2,alpha.1))+
 }
 @   
 
-%ANIMATION(panels)
-
-
+ANIMATION(panels)
 
 \framet{Framing clustering as an optimization problem}{
 \item Many interesting problems in statistics can be posed as
