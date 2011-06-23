@@ -1,0 +1,318 @@
+\documentclass[final]{beamer}
+\usetheme[headheight=10cm,footheight=5cm]{boxes}
+\usetheme{julien}
+%\usepackage{times}
+\usepackage{etex}
+\usepackage{amsmath,amssymb}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{helvet}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[orientation=landscape,size=a0,scale=1.4,debug]{beamerposter}   % e.g. for DIN-A0 poster
+\usepackage{exscale}
+\usepackage{pst-plot}
+\usepackage{pstricks-add}
+\usepackage{epsfig}
+\usepackage{eulervm}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{subfigure}
+\usetikzlibrary{arrows,shapes,snakes,automata,backgrounds,petri}
+
+%\usepackage{floatflt}
+%\usepackage[dvips]{graphicx}
+%\usepackage{graphicx}
+ 
+%\usepackage[size=custom,width=3.0,height=120,scale=2,debug]{beamerposter}  % e.g. custom size poster
+\usepackage{beamerthemejulien}
+
+\input{macros.tex}
+\newcommand{\rred}[1]{{\textcolor{red}{#1}}}
+\definecolorset{rgb}{}{}{inriablue,0.35,0.31,0.75}
+\newcommand{\bblue}[1]{{\textcolor{inriablue}{#1}}}
+
+\title[Network Flow Algorithms for Structured Sparsity]{\veryHuge{Network Flow Algorithms for Structured Sparsity}}
+\author[Julien Mairal]{
+   Julien Mairal \and
+      Rodolphe Jenatton \and
+      Guillaume Obozinski \and
+      Francis Bach 
+}
+\institute[Willow Project Team - INRIA/ENS/CNRS]{~}
+% 
+\begin{document}
+\begin{frame}{} 
+\begin{columns}[T]
+\hfill
+\begin{column}{0.315\paperwidth}
+% \begin{block}{One minute overview}
+% \begin{itemize}
+% \item Solving large-scale \rred{structured sparse} regularized problems.
+% \item Use of (accelerated) \rred{proximal gradient methods}.
+% \item Proximal operator solved with \rred{network flow optimization}.
+% \end{itemize}
+% \end{block}
+\begin{block}{Problem setting}
+\begin{itemize}
+\item We are interested in solving
+ {\large
+ \begin{displaymath}
+     \min_{\w \in \Real^p} f(\w) + \lambda \sum_{g \in \GG} \eta_g \|\w_g\|_\infty.
+ \end{displaymath}
+ }
+\item $f$ is a \rred{convex smooth function} (empirical risk, data-fitting term).
+\item $p$ can be large (up to $\approx10^6$).
+\item $\GG$ is a set of \rred{overlapping} groups of variables.
+\end{itemize}
+\vspace*{0.5cm}
+\textbf{Q: Why such a regularization?}
+\begin{itemize}
+   \item the $\ell_1$ does not encode structure, just \rred{cardinality}.
+   \item variables are sometimes organized into groups that are
+   \begin{itemize}
+\normalsize
+      \item \vspace*{0.2cm}\normalsize{non-overlapping}; (\small{Yuan and Lin '06})
+      \item \vspace*{0.2cm}\normalsize{tree-structured}; (\small{Zhao et al '09})
+      \item \normalsize{\rred{overlapping}}; \\ (\small{Jenatton et al '09, Jacob et al '09, Huang et al '09, Baraniuk et al '08})
+   \end{itemize}
+   \item The following penalty {\small(Jenatton et al '09)}
+ {\large
+\begin{displaymath}
+  \Omega(\w) \defin  \sum_{g \in \GG} \eta_g \|\w_g\|_\infty,
+\end{displaymath}
+}
+\hspace*{-0.5cm}encourages variables in a same group to be set to zero~together.
+\item \rred{The goal is to encode a-priori knowledge by designing groups}.
+\end{itemize}
+\end{block}
+\begin{block}{Proximal gradient algorithms}
+   \begin{itemize}
+      \item Generalizes the idea of gradient descent
+         \begin{displaymath}
+            \begin{split}
+               \w^{k+1} & \!\leftarrow \!\argmin_{\w \in \Real^p} {\underbrace{f(\w^k)\! +\! \nabla f(\w^k)^\top(\w-\w^k)}_{\text{linear approximation}}} + {\underbrace{\frac{L}{2}\|\w-\w^k\|_2^2}_{\text{quadratic term}}} \!+\! \lambda\Omega(\w) \\
+               & \leftarrow \argmin_{\w \in \Real^p} \frac{1}{2}\|(\w^k - \frac{1}{L}\nabla f(\w^k))-\w\|_2^2 + \frac{\lambda}{L}\Omega(\w). 
+            \end{split}
+         \end{displaymath}
+      \item They require solving efficiently the {\rred{proximal operator $\text{Prox}_{\lambda\Omega}$}}
+{\large
+         \begin{displaymath}
+           \u \to \argmin_{\w \in \Real^p} ~ \frac{1}{2}\|\u-\w\|_2^2 +  \lambda\Omega(\w).
+         \end{displaymath}
+}
+%          \begin{displaymath}
+%             \w^\star_i= \sign(\u_i) (\u_i-\lambda)^+.
+%          \end{displaymath}
+      \item Accelerated versions based on Nesterov first-order method.
+      \item For the $\ell_1$-norm, soft-thresholding $$\u_i \to  \sign(\u_i) \max(|\u_i|-\lambda,0).$$
+      \item For non-overlapping groups with $\ell_2$-norms, $$\u_g \to \frac{\u_g}{\|\u_g\|_2}\max(\|\u_g\|_2-\lambda,0),$$
+      \item For non-overlapping groups with $\ell_\infty$-norms, $$\u_g \to \u_g - \Pi_{\|.\|_1 \leq \lambda}[\u_g].$$
+      \item \rred{As soon as the groups overlap, the problem is difficult}.
+   \end{itemize}
+\end{block}
+
+
+\end{column}\hfill
+
+\begin{column}{0.315\linewidth}
+\begin{block}{Hierarchical norms: Jenatton et al, ICML 2010} 
+\begin{itemize}
+   \item A set of groups is \rred{tree-structured} if $$\forall g,h \in \GG,~~ g \cap h = \emptyset ~~\text{or}~~ g \subset h ~~\text{or}~~ h \subset g.$$
+   \item Order the groups $g_1,\ldots,g_m$ \rred{from the leaves to the root}.
+   \item The proximal operator admits a \rred{closed form}: $$\text{Prox}_{\lambda\Omega} = \text{Prox}^{g_1} \circ \ldots \circ \text{Prox}^{g_m}.$$
+   \item Sequence of small proximal operators/projections.
+   \item \rred{$O(p)$ operations} for $\ell_2$-norms ($O(pd)$ for $\ell_\infty$-norms).
+\end{itemize}
+\end{block}
+\begin{block}{Dual formulation of the proximal operator} 
+   {\color{red} Idea: no more overlaps in the dual problem}
+\begin{itemize}
+\item One dual variable $\xib^g$ per group $g$ in $\GG$.
+{\large
+\begin{multline*}
+\min_{\xib \in \Real^{p \times |\GG|}} \frac{1}{2}\big\| \u - \sum_{g \in \GG} \xib^g \big\|_2^2 \\ \st \forall g \in \GG,~~ \|\xib^g\|_1 \leq \lambda\eta_g ~~\text{and}~~ \xib^g_j = 0 ~~\text{if}~~ j \notin g.
+\end{multline*}
+}
+\item First step: Flip the signs of $\u$, and impose $\xib \geq 0$.
+\item This becomes a \rred{quadratic min-cost flow problem}.
+\end{itemize}
+\end{block}
+\begin{block}{Examples of Graph Modelling}
+\small{
+\begin{figure}[hbtp!]
+\tikzstyle{source}=[circle,thick,draw=blue!75,fill=blue!20,minimum size=18mm]
+\tikzstyle{sink}=[circle,thick,draw=blue!75,fill=blue!20,minimum size=18mm]
+\tikzstyle{group}=[place,thick,draw=red!75,fill=red!20, minimum size=18mm]
+\tikzstyle{var}=[rectangle,thick,draw=black!75,fill=black!20,minimum size=14mm]
+\def\distnode{3.8cm}
+\def\distnodex{5.5cm}
+\tikzstyle{every label}=[red]
+   \begin{center}
+      ~~\subfigure[$\GG\!=\!\{ g\!=\!\{1,2,3\} \}$.]{
+      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
+         \begin{scope}
+            \node [source]   (s)                                    {$s$};
+            \node [group]    (g1)  [below of=s]                      {$g$}
+            edge  [pre,line width=0.1cm] node[left,xshift=1mm] {$\xib^g_1 \!+\! \xib^g_2 \!+\! \xib^g_3 \!\leq\! \lambda \eta_g$} (s);
+            \node [var] (u2) [below of=g1]                    {$\u_2$}
+            edge  [pre,line width=0.1cm] node[above, left,xshift=1mm] {$\xib^{g}_2$} (g1);
+            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
+            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g1);
+            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
+            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{g}_3$} (g1);
+            \node [sink] (si) [below of=u2] {$t$}
+            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
+            edge [pre,line width=0.1cm] node[above,left,xshift=3mm] {$\color{red} c_2$} (u2)
+            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
+         \end{scope}
+      \end{tikzpicture}\label{subfig:grapha}
+      } \hfill 
+      \subfigure[$\GG\!=\!\{ g\!=\!\{1,2\},h\!=\!\{2,3\} \}$.]{
+      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
+         \begin{scope}
+            \node [source]   (s)                                    {$s$};
+            \node [group]    (g)  [below of=s,xshift=-30mm]                      {$g$}
+            edge  [pre,line width=0.1cm] node[left] {$\xib^g_1 \!+ \!\xib^g_2 \!\leq \!\lambda \eta_g$} (s);
+            \node [group]    (h)  [below of=s,xshift=30mm]                      {$h$}
+            edge  [pre,line width=0.1cm] node[right] {$\xib^h_2 \!+ \!\xib^h_3 \!\leq \!\lambda \eta_h$} (s);
+            \node [var] (u2) [below of=g,xshift=30mm]                    {$\u_2$}
+            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{h}_2$} (h)
+            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_2$} (g);
+            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
+            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g);
+            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
+            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{h}_3$} (h);
+            \node [sink] (si) [below of=u2] {$t$}
+            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
+            edge [pre,line width=0.1cm] node[above,left,xshift=1mm] {$\color{red} c_2$} (u2)
+            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
+         \end{scope}
+      \end{tikzpicture}\label{subfig:graphb}
+      } ~~~\\
+      \subfigure[$\GG\!=\!\{ g\!=\!\{1,2,3\},h\!=\!\{2,3\} \}$.]{
+      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
+         \begin{scope}
+            \node [source]   (s)                                    {$s$};
+            \node [group]    (g)  [below of=s]                      {$g$}
+            edge  [pre,line width=0.1cm] node[left] {$\xib^g_1 \!+ \!\xib^g_2 \!+ \!\xib^g_3 \!\leq \!\lambda \eta_g$} (s);
+            \node [group]    (h)  [right of=g,node distance=\distnodex]                      {$h$}
+            edge  [pre,line width=0.1cm] node[right,xshift=-6mm,yshift=6mm] {$\xib^h_2 \!+ \!\xib^h_3 \!\leq \!\lambda \eta_h$} (s);
+            \node [var] (u2) [below of=g]                    {$\u_2$}
+            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{h}_2$} (h)
+            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_2$} (g);
+            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
+            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g);
+            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
+            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{g}_3$} (g)
+            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{h}_3$} (h);
+            \node [sink] (si) [below of=u2] {$t$}
+            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
+            edge [pre,line width=0.1cm] node[above,left,xshift=1mm] {$\color{red} c_2$} (u2)
+            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
+         \end{scope}
+      \end{tikzpicture}\label{subfig:graphc}
+      } \hspace*{-0.5cm}
+      \subfigure[$\GG\!=\!\{ g\!=\!\{1\}\cup h,h\!=\!\{2,3\} \}$.]{
+      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
+         \begin{scope}
+            \node [source]   (s)                                    {$s$};
+            \node [group]    (g)  [below of=s]                      {$g$}
+            edge  [pre,line width=0.1cm] node[left,xshift=4mm] {$\xib^g_1 \!+ \!\xib^g_2 \!+ \!\xib^g_3 \!\leq \!\lambda \eta_g$} (s);
+            \node [group]    (h)  [right of=g, node distance=\distnodex]                      {$h$}
+            edge  [pre,line width=0.1cm] node[right,yshift=1mm] {$\xib^h_2 \!+ \!\xib^h_3 \!\leq \!\lambda \eta_h$} (s)
+            edge  [pre,line width=0.1cm] node[below,yshift=4mm] {$\xib^g_2 \!+ \!\xib^g_3$} (g);
+            \node [var] (u2) [below of=g]                    {$\u_2$}
+            edge  [pre,line width=0.1cm] node[above,left] {$\xib^g_2\!+\!\xib^{h}_2$} (h);
+            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
+            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g);
+            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
+            edge  [pre,line width=0.1cm] node[above, right] {$\xib^g_3\!+\!\xib^{h}_3$} (h);
+            \node [sink] (si) [below of=u2] {$t$}
+            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
+            edge [pre,line width=0.1cm] node[above,left,xshift=1mm] {$\color{red} c_2$} (u2)
+            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
+         \end{scope}
+      \end{tikzpicture} \label{subfig:graphd}
+      } 
+   \end{center}
+   \caption{Graph representation of simple proximal problems.}
+\end{figure}
+}
+\end{block}
+
+
+\end{column}\hfill
+\begin{column}{0.315\linewidth}
+\begin{alertblock}{Code available! \textbf{\url{http.//www.di.ens.fr/willow/SPAMS/}}}
+\textbf{SPAMS v2.0} (C++ with Matlab interface) implements:
+\begin{enumerate}
+\item Proximal methods (ISTA/FISTA) with duality gaps for
+\begin{itemize}
+\item square, logistic and multiclass logistic loss functions;
+\item simple norms $\ell_1$, $\ell_2$; mixed-norms $\ell_{1,2}$, $\ell_{1,\infty}$, $\ell_{1,2}+\ell_1$, $\ell_{1,\infty}+\ell_1$;
+\item tree-structured $\ell_{2}$- or $\ell_{\infty}$-norms; sum of $\ell_{\infty}$-norms with overlapping groups.
+\end{itemize}
+\item Various fast sparse solvers:
+\begin{itemize}
+\item $\ell_1$-solvers: LARS, coordinate descent; Greedy algorithms (OMP),\ldots
+\item Various fast Euclidean projections (simplex, $\ell_1$-ball, $\ell_1\!+\!\ell_2^2$,  $\ell_1\!+\!\text{TV}\!+\!\ell_2^2$\ldots).
+\end{itemize}
+
+\item Dictionary learning and matrix factorization (NMF, sparse PCA)
+\end{enumerate}
+\end{alertblock}
+\begin{block}{Idea of the algorithm: Divide and conquer}
+\begin{enumerate}
+   \item Solve a relaxed problem in linear time.
+   \item Check whether the solution is feasible with a max-flow.
+   \item If yes, it is optimal and stop the algorithm.
+   \item If not, find a minimum cut and removes the arcs along the cut.
+   \item Recursively process the two subgraphs defined by the cut.
+\end{enumerate}
+Similar algorithm in submodular functions literature {\small (Groenevelt '91)}.
+\end{block}
+
+\begin{block}{Experiments}
+{\bfseries Background subtraction}~{\small (Cehver '08, Huang '09, Wright '08)}
+\begin{itemize}
+\item $\y = \X\w + \e$; $\X$, background images; $\e$ is sparse and structured.
+\item $p \approx 60\,000$; $|\GG| \approx 120\,000$; $|E| \approx 660\,000$; $1.5sec / \text{prox}$
+\end{itemize}
+   \begin{figure}
+      \centering
+%      \includegraphics[width=6.6cm]{images/original_trees.png} \hfill
+%      \includegraphics[width=6.6cm]{images/background_trees_struct.png}\hfill
+%      \includegraphics[width=6.6cm]{images/foreground_trees_L1.png}\hfill 
+%      \includegraphics[width=6.6cm]{images/foreground_trees_struct.png}\hfill 
+%      \includegraphics[width=6.6cm]{images/foreground_trees_struct_BIS.png} \\
+%     \vspace*{0.2cm}
+%       \includegraphics[width=6.6cm]{images/original_video_boot.png}\hfill
+%       \includegraphics[width=6.6cm]{images/background_video_boot_struct.png}\hfill
+%       \includegraphics[width=6.6cm]{images/foreground_video_boot_L1.png}\hfill
+%       \includegraphics[width=6.6cm]{images/foreground_video_boot_struct.png}\hfill 
+%       \includegraphics[width=6.6cm]{images/foreground_video_boot_struct_BIS.png} \\
+    \caption{{\small Original, est. background, est. foreground with $\ell_1$, with $\ell_1+\Omega$.}}
+   \end{figure}
+\vspace*{-0.3cm}
+{\bfseries Multi-task learning of hierarchical structures}
+   \begin{displaymath}
+    \min_{\X,\W}
+    \frac{1}{n}\sum_{i=1}^n\!\Big[\frac{1}{2} \|\y^i-\X\w^i\|_2^2 + \lambda_1 \Omega_{\text{tree}}(\w^i)\Big]\!+\!\lambda_2\Omega_{\text{joint}}(\W),\ \text{s.t.}\
+    \forall j,~~\|\x^j\|_2\leq 1, 
+\end{displaymath}
+$n=10\,000$ image patches; $p,|\GG| \approx 4\,000\,000$; $|E|\approx 12\,000\,000$
+\begin{figure}[hbtp]
+   \centering
+%   \includegraphics[width=0.42\linewidth]{images/tree2.png}\hfill
+%   \includegraphics[width=0.54\linewidth]{images/tree_denois.png} 
+   \caption{Example of hierarchy - Mean square error versus dictionary size. 
+   } \label{fig:tree}
+\end{figure}
+\end{block}
+\end{column}
+\end{columns}
+
+\end{frame}
+\end{document}
+
