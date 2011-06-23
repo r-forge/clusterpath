@@ -223,7 +223,7 @@ ggplot(subset(cvx,s>=S),aes(alpha.2,alpha.1))+
 }
 @   
 
-
+COMPARE_NORM_WEIGHTS
 
 \begin{frame} \frametitle{Decreasing weights}
 
@@ -452,7 +452,7 @@ $$v_C = \frac{
 %   algorithm to exhibit complexity of $O(n\log n)$.
 % \end{frame}
 
-\section{\ell_2 algorithm}
+\section{$\ell_2$ algorithm}
 
 \section{Conclusions and future work}
 

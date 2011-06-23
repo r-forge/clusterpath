@@ -1,0 +1,22 @@
+\begin{frame} \frametitle{Choice of norm and weights alters the
+    clusterpath}
+  \begin{minipage}{1.65in}
+    Take $X\in\RR^{10\times 2}$.
+    
+    $\min_\alpha||X-\alpha||_F^2$
+    
+    subject to
+    
+    $\Omega(\alpha)/\Omega(X) \leq %s$,
+    
+    $$\Omega(Y)=\sum_{i<j}||Y_i-Y_j||_q w_{ij}$$
+    
+    $w_{ij} = \exp(-\gamma||X_i-X_j||^2_2)$
+  \end{minipage}
+  \begin{minipage}{3in}
+<<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3.25,height=3.25>>=
+print(plot.one(%s)) 
+@ 
+\end{minipage}
+\end{frame}
+
