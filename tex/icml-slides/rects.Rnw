@@ -1,0 +1,23 @@
+%% 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0
+\begin{frame} \frametitle{Geometric interpretation of penalty with general
+    weights}
+    \begin{minipage}{2in}
+      \begin{itemize}
+      \item Let $X\in\RR^{3\times 2}$.
+      \item $n=3$ points.
+      \item $p=2$ dimensions.
+      \item Approximate $X$ using $\alpha$: $ \min_\alpha||\alpha-X||^2_F $
+      \item Constrain the total area of boxes between every pair of points:
+        $\sum_{i<j}||\alpha_i-\alpha_j||_2 \alert<1>{w_{ij}} \leq %s $
+        (grey \alert<1>{rectangles})
+      \end{itemize}
+  \end{minipage}
+  \begin{minipage}{2.5in}
+<<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3,height=3.25>>=
+plotpolys(%s)
+@  
+
+\end{minipage}
+
+\end{frame}
+
