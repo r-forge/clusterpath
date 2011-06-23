@@ -141,7 +141,7 @@ getpolys <- function(path,l=0){
 }
 idname <- "Identity weights, $t=\\Omega(X)$"
 line.df <- data.frame(getlines(x),figure=factor(idname))
-path <- join.clusters2.general(x,verbose=1,join.thresh=0.01,gamma=1.3)
+path <- clusterpath.l2(x,verbose=1,join.thresh=0.01,gamma=1.3)
 lval <- path$lambda[300]
 poly.list <- getpolys(path,lval)
 jointitle <- sprintf("Decreasing weights after join, $t<\\Omega(X)$")
