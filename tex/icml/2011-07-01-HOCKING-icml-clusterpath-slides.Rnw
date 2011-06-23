@@ -190,6 +190,41 @@ print(p)
 
 \end{frame}
 
+<<fig=FALSE,echo=FALSE,results=hide>>=
+set.seed(19) 
+sim <- gendata(N=5,D=2,K=2,SD=0.6)
+ ## cvx <- data.frame()
+ ## for(norm in c(1,2,"inf"))for(gamma in c(0,1)){
+ ##   cvx <- rbind(cvx,cvxmod.cluster(sim$mat,norm=norm,gamma=gamma,
+ ##                                   regularization.points=50))
+ ## }
+load(url("http://cbio.ensmp.fr/~thocking/clusterpath-figure-2.RData"))
+means <- data.frame(alpha=t(colMeans(sim$mat)))
+normweights <- function(var,val){
+  val <- as.character(val)
+  if(var=="gamma")var <- "\\gamma"
+  else var <- sprintf("\\textrm{%s}",var)
+  val[val=="inf"] <- "\\infty"
+  sprintf("$%s=%s$",var,val)
+}
+plot.one <- function(S){
+ggplot(subset(cvx,s>=S),aes(alpha.2,alpha.1))+
+  geom_path(aes(group=row),colour="black",lwd=1)+
+  facet_grid(gamma~norm,labeller=normweights)+
+  ##geom_point(aes(size=s,colour=gamma),pch=21)+
+  ##geom_path(aes(group=interaction(row,gamma),colour=gamma))+
+  ##facet_grid(~norm,labeller=normweights)+
+  scale_colour("$\\gamma$")+
+  coord_equal()+
+  scale_size("$s$")+
+  geom_point(data=data.frame(alpha=sim$mat),pch=21,fill="white")+
+  scale_x_continuous("",breaks=-10)+
+  scale_y_continuous("",breaks=-10)
+}
+@   
+
+
+
 \begin{frame} \frametitle{Decreasing weights}
 
 <<>>=
@@ -417,9 +452,7 @@ $$v_C = \frac{
 %   algorithm to exhibit complexity of $O(n\log n)$.
 % \end{frame}
 
-\framet{The path algorithm (lines) agrees with cvxmod (dots)}{
-\item Toy example with $n=10$ points in $p=1$ dimension.
-}
+\section{\ell_2 algorithm}
 
 \section{Conclusions and future work}
 
