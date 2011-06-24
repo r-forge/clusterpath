@@ -1,7 +1,7 @@
-% -*- mode: Rnw -*-
+% -*- mode: noweb; noweb-code-mode: R-mode -*-
 \documentclass{beamer}
     %tdh from http://stackoverflow.com/questions/2320776/remove-the-slide-count-from-beamer-footer
-    \usetheme[secheader]{Madrid}
+    \usetheme{Madrid}
 
       %#make sure to change this part, since it is predefined
       %\defbeamertemplate*{footline}{infolines theme}
@@ -103,8 +103,7 @@
       \end{itemize}
   \end{minipage}
   \begin{minipage}{2.5in}
-<<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3,height=3.25>>=
-
+<<fig=FALSE,tikz=FALSE,echo=FALSE,results=hide>>=
 library(clusterpath)
 ### Figure 1. geometric interpretation
 set.seed(3)
@@ -190,6 +189,13 @@ norms$y[6] <- norms$y[6]+0.05
 norms$y[8] <- norms$y[8]+0.1
 library(ggplot2)
 theme_set(theme_bw())
+@ 
+
+<<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3,height=3.25>>=
+## calculate this first to get proper scale
+#path <- cvxmod.cluster(x,regularization.points=20)
+#biggest <- path[path$s==1,]
+#big.polys <- getpolys(biggest)
 interpretation <- function(...){
   p <- ggplot(NULL,aes(alpha.1,alpha.2))+
     coord_equal()+
@@ -199,6 +205,7 @@ interpretation <- function(...){
             data=data.frame(alpha.1=c(-1,x[2,1]-0.05,0.35),
               alpha.2=c(-1.25,0.35,x[3,2]),
               label=sprintf("\\scriptsize$X_%d$",1:3)))
+    #geom_blank(data=big.polys$polys)
   L <- list(...)
   for(l in L)p <- p+l
   p+  geom_point(data=pts,pch=21,fill="white")
