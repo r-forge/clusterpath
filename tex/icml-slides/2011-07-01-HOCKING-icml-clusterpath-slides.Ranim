@@ -249,7 +249,7 @@ theme_set(theme_bw())
 interpretation <- function(...){
   p <- ggplot(NULL,aes(alpha.1,alpha.2))+
     coord_equal()+
-    scale_x_continuous("$\\alpha^1$",limits=c(-1,0.6),breaks=c(-10))+
+    scale_x_continuous("$\\alpha^1$",limits=c(-1.1,0.4),breaks=c(-10))+
     scale_y_continuous("$\\alpha^2$",limits=c(-1.3,0.6),breaks=c(-10))+
     geom_text(aes(label=label),
             data=data.frame(alpha.1=c(-1,x[2,1]-0.05,0.35),
@@ -354,8 +354,9 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
 \begin{frame}
   \frametitle{An efficient path algorithm for the $\ell_1$ clusterpath}
   \begin{itemize}
-\item Objective separable on each dimension $\alpha^i\in\RR^p$:
-  $$\min_\alpha f_1(\alpha)=\sum_{i=1}^n\min_{\alpha^i}f_1(\alpha_i)$$
+\item Objective separable on each dimension $\alpha^i\in\RR^n$:
+  $$\min_\alpha f_1(\alpha)= \sum_{k=1}^p\sum_{i=1}^n(X_{ik}-\alpha_{ik})^2
+  +\lambda\sum_{i<j}|\alpha_{ik}-\alpha_{jk}|=\sum_{k=1}^p\min_{\alpha^i}f_1(\alpha_i)$$
 \item Piecewise linearity.
 \item LARS-like path-following algorithm (Hoefling \emph{et al.}\
   2009), checks for split of a cluster of size $n_C$ by solving a
@@ -366,6 +367,21 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
   $O(\log n)$ using queues and linked lists: $O(pn\log n)$.
 \item Exact solutions for the entire regularization path!
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The spectral clusterpath}
+  2 possible problems with spectral clustering:
+  \begin{itemize}
+  \item Hard-thresholding of eigenvectors:
+    $e_{01}(x)=1_{x\leq\Lambda}$ for some eigenvalue $\Lambda$.
+  \item K-means on eigenvectors.
+  \end{itemize}
+  We propose:
+  \begin{itemize}
+  \item Soft-thresholding of eigenvectors: $e_{\exp}(x)=\exp(-\nu x)$.
+  \item Clusterpath on the eigenvectors.
+  \end{itemize}
 \end{frame}
 
 \section{Results and conclusions}
@@ -404,13 +420,16 @@ Performance measured using the Normalized Rand Index (Hubert and Arabie 1985).
 \begin{frame}
   \frametitle{Conclusions and future work}
   \begin{itemize}
-\item Using identity weights with the L1 norm, we have agglomerative
-  clustering and an $O(n\log n)$ algorithm.
-\item Agglomerative clustering for which other weights and norms?
-\item Applications in solving
-  $\min_\beta||Y-X\beta||+\lambda\Omega(\beta)$ using proximal methods.
-\item Can use other weights to alter the path of solutions.
+  \item We proposed a new family of \alert<1>{convex} objective
+    functions for clustering.
+  \item Using $w_{ij}=1$ with the $\ell_1$ norm, we have
+    \alert<2>{hierarchical} clustering and complexity $O(pn\log n)$.
+\item Open question: hierarchical clustering for which other weights
+  and norms?
+\item \alert<3>{Performance} of weighted $\ell_2$ similar to spectral
+  clustering.
 \end{itemize}
+\only<4>{Thank you, any questions?}
 \end{frame}
 
 \end{document}

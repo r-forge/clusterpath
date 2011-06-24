@@ -14,7 +14,7 @@
   \end{minipage}
   \begin{minipage}{2.5in}
 <<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3,height=3.25>>=
-print(plotpolys(%s) )
+print( plotpolys(%s) )
 @  
 
 \end{minipage}
