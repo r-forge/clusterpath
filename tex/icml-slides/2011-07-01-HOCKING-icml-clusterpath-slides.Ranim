@@ -89,6 +89,49 @@
 \section{Introduction: framing clustering as a convex optimization
   problem results in the clusterpath}
 
+\begin{frame}
+  \frametitle{Existing clustering methods have some drawbacks}
+  \begin{itemize}
+  \item Clustering: assign labels to points $X\in\RR^{n\times p}$.
+  \item Classical methods: hierarchical, k-means, spectral, mixture
+    models.
+  \item K-means is not hierarchical: less interpretable. 
+  \item K-means is not convex: no guarantees to find the global
+    optimum.
+    \item Our contributions:
+  \begin{itemize}
+  \item A new convex objective function for clustering.
+  \item Interpretable, hierarchial clustering.
+  \item Efficient algorithms.
+  \item Clustering performance on par with spectral clustering.
+  \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The clusterpath relaxes a hard fusion penalty}
+  Look for a matrix $\alpha\in\RR^{n\times p}$ such that
+  \begin{itemize}
+  \item $\alpha_i \approx X_i$ for all $i$, and
+  \item Some $\alpha_i$ and $\alpha_j$ are exactly equal:
+  \end{itemize}
+$$
+  \minimize{
+    \alpha\in\RR^{n\times p}}{
+    \frac 1 2 ||\alpha-X||_F^2}{
+    \sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t}
+$$
+  \item   This is non-convex, thus no guarantees to find global optimum.
+  \item We propose the following convex relaxation:
+  \end{itemize}
+$$
+\minimize{
+    \alpha\in\RR^{n\times p}}{
+    \frac 1 2 ||\alpha-X||_F^2}{
+    \sum_{i<j}||\alpha_i-alpha_j||_q \leq t}
+$$
+\end{frame}
+
 \begin{frame} \frametitle{Geometric interpretation of penalty with identity
     weights}
     \begin{minipage}{2in}
