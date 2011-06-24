@@ -41,33 +41,18 @@
 \usepackage[nogin]{Sweave}
 \SweaveOpts{width=5,height=3.25,keep.source=TRUE}
 
-\AtBeginSection[]
-{
-  \begin{frame}<beamer>
-    \frametitle{Outline}
-    \tableofcontents[currentsection]
-  \end{frame}
-}
-
-\AtBeginSubsection[]
-{
-  \begin{frame}<beamer>
-    \frametitle{Outline}
-    \tableofcontents[currentsection,currentsubsection]
-  \end{frame}
-}
-
 \usepackage{graphicx}
 
 \newcommand{\sign}{\operatorname{sign}}
 \begin{document}
 
-  \title[Clusterpath for hierarchical convex clustering]{
-    Clusterpath: \\an algorithm for clustering using convex fusion penalties}
-  \institute[INRIA Paris]{Sierra team --- INRIA Paris}
-  \author[Toby Dylan Hocking \emph{et al.}]{Toby Dylan Hocking\\
-{\small joint work with Armand Joulin, Francis Bach, and Jean-Philippe Vert}}
-\date{1 July 2011}
+\title[Clusterpath for hierarchical convex clustering]{ Clusterpath:
+  \\an algorithm for clustering using convex fusion penalties}
+\institute[INRIA Paris]{Sierra team --- INRIA Paris\\Mines ParisTech /
+  Curie Institute / INSERM}
+\author[Toby Dylan Hocking \emph{et al.}]{Toby Dylan Hocking\\toby.hocking@inria.fr\\\url{http://cbio.ensmp.fr/~thocking/}\\
+  {\small joint work with Armand Joulin, Francis Bach, and
+    Jean-Philippe Vert}} \date{1 July 2011}
 
 \maketitle
 \section[Outline]{}
@@ -97,62 +82,43 @@
 
 \begin{frame}
   \frametitle{Existing clustering methods have some drawbacks}
+  \begin{minipage}{2in}
   \begin{itemize}
-  \item Clustering: assign labels to points $X\in\RR^{n\times p}$.
-  \item Classical methods: hierarchical, k-means, spectral, mixture
-    models.
-  \item K-means is not hierarchical: less interpretable. 
-  \item K-means is not convex: no guarantees to find the global
-    optimum.
-    \item Our contributions:
-  \begin{itemize}
-  \item A new convex objective function for clustering.
-  \item Interpretable, hierarchical clustering.
-  \item Efficient algorithms.
-  \item Clustering performance on par with spectral clustering.
+  \item Clustering: assign labels to $n$ points in $p$ dimensions
+    $X\in\RR^{n\times p}$.
+  \item Methods:
+    \begin{itemize}
+  \item K-means
+  \item Hierarchical
+  \item Mixture models
+  \item Spectral (Ng \emph{et al.} 2001)
+  \item ... 
+    \end{itemize}
+    \item Issues:
+    \begin{itemize}
+    \item Hierarchy
+    \item Convexity
+    \item Greediness
+    \item Stability
   \end{itemize}
   \end{itemize}
+  \end{minipage}
+  \begin{minipage}{2in}
+  \end{minipage}
 \end{frame}
 
 \begin{frame}
-  \frametitle{The clusterpath relaxes a hard fusion penalty}
-  Look for a matrix $\alpha\in\RR^{n\times p}$ such that
+  \frametitle{Our contributions:}
   \begin{itemize}
-  \item $\alpha_i \approx X_i$ for all $i$, and
-  \item Some $\alpha_i$ and $\alpha_j$ are exactly equal:
+  \item A new \alert<1>{convex} objective function for clustering.
+  \item Interpretable, \alert<1>{hierarchical} clusterpath.
+  \item Efficient algorithms.
+  \item Clustering \alert<1>{performance} on par with spectral clustering.
   \end{itemize}
-$$
-  \minimize{
-    \alpha\in\RR^{n\times p}}{
-    \frac 1 2 ||\alpha-X||_F^2}{
-    \sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t}
-$$
-\begin{itemize}
-\item   This is non-convex, thus no guarantees to find global optimum.
-\item We propose the following convex relaxation:
-\end{itemize}
-$$
-\minimize{
-    \alpha\in\RR^{n\times p}}{
-    \frac 1 2 ||\alpha-X||_F^2}{
-    \sum_{i<j}||\alpha_i-\alpha_j||_q \leq t}
-$$
+  \includegraphics[width=\textwidth]{moons-clusterpath}
 \end{frame}
 
-\begin{frame} \frametitle{Geometric interpretation of penalty with identity
-    weights}
-    \begin{minipage}{2in}
-      \begin{itemize}
-      \item Let $X\in\RR^{3\times 2}$.
-      \item $n=3$ points.
-      \item $p=2$ dimensions.
-      \item Approximate $X$ using $\alpha$: $ \min_\alpha||\alpha-X||^2_F $
-      \item Constrain the total distance between every pair of points:
-        $$\sum_{i<j}||\alpha_i-\alpha_j||_q \leq t$$
-        (grey lines)
-      \end{itemize}
-  \end{minipage}
-  \begin{minipage}{2.5in}
+
 <<fig=FALSE,tikz=FALSE,echo=FALSE,results=hide>>=
 library(clusterpath)
 ### Figure 1. geometric interpretation
@@ -217,35 +183,28 @@ getpolys <- function(alpha.df){
   }
   list(polys=polys,clusters=clusters,ws=ws,width=width)
 }
-idname <- "Identity weights, $t=\\Omega(X)$"
-line.df <- data.frame(getlines(x),figure=factor(idname))
-jointitle <- sprintf("Decreasing weights after join, $t<\\Omega(X)$")
-apart <- "Decreasing weights, $t=\\Omega(X)$"
-outside <- data.frame(start=rbind(x,x),figure=idname,
-                      end.1=c(x[1,1],x[1,1],x[3,1],x[3,1],x[3,1],x[3,1]),
-                      end.2=c(x[2,2],x[2,2],x[2,2],x[1,2],x[2,2],x[1,2]))
-segs <- rbind(outside,line.df[,names(outside)])
-getcenter <- function(d,ann,xoff=0,yoff=0){
-  with(d,data.frame(x=(start.1+end.1)/2+xoff,y=(start.2+end.2)/2+yoff,
-                    label=sprintf("\\scriptsize$\\ell_%s$",ann),
-                    figure=idname))
+l2 <- getlines(x)
+l1 <- data.frame(start=rbind(x,x),
+                 end.1=c(x[1,1],x[1,1],x[3,1],x[3,1],x[3,1],x[3,1]),
+                 end.2=c(x[2,2],x[2,2],x[2,2],x[1,2],x[2,2],x[1,2]),
+                 norm="1")
+linf <- data.frame(start=x[c(1,2,1),],
+                   end.1=c(x[3,1],x[3,1],x[1,1]),
+                   end.2=c(x[1,2],x[2,2],x[2,2]),
+                   norm="\\infty")
+lvec <- c("1","2","\\infty")
+norms <- data.frame(alpha.1=-1,alpha.2=0.5,
+                    label=sprintf("$\\ell_%s$",lvec),norm=lvec)
+segs <- data.frame()
+for(df in list(l1,l2,linf)){
+  segs <- rbind(segs,df[,names(l1)])
 }
-inf <- getcenter(outside,"\\infty")[c(1,4,5),]
-inf$y[1] <- inf$y[1]+0.2
-inf$x[-1] <- inf$x[-1]+0.2
-inf$y[3] <- inf$y[3]+0.1
-norms <- rbind(getcenter(line.df,"2"),getcenter(outside,"1"),inf)
-norms$y[6] <- norms$y[6]+0.05
-norms$y[8] <- norms$y[8]+0.1
 library(ggplot2)
 theme_set(theme_bw())
-@ 
-
-<<fig=TRUE,tikz=TRUE,external=TRUE,echo=FALSE,results=hide,width=3,height=3.25>>=
 ## calculate this first to get proper scale
 #path <- cvxmod.cluster(x,regularization.points=20)
 #biggest <- path[path$s==1,]
-#big.polys <- getpolys(biggest)
+ #big.polys <- getpolys(biggest)
 interpretation <- function(...){
   p <- ggplot(NULL,aes(alpha.1,alpha.2))+
     coord_equal()+
@@ -260,15 +219,54 @@ interpretation <- function(...){
   for(l in L)p <- p+l
   p+  geom_point(data=pts,pch=21,fill="white")
 }
-print(interpretation(
+drawlines <- function(N){
+interpretation(
   geom_segment(aes(start.1,start.2,xend=end.1,yend=end.2),
-               data=segs,lwd=2,colour="grey"),
-  geom_text(aes(x,y,label=label),data=norms)
-))
+               data=subset(segs,norm==N),lwd=2,colour="grey"),
+  geom_text(aes(label=label),data=subset(norms,norm==N))
+)
+}
 @ 
-\end{minipage}
 
+\begin{frame}
+  \frametitle{The clusterpath relaxes a hard fusion penalty}
+  \begin{minipage}{2in}
+    Want some points to be equal $\alpha_i=\alpha_j$:
+  \begin{itemize}
+$$
+  \minimize{
+    \alpha\in\RR^{n\times p}}{
+    \frac 1 2 ||\alpha-X||_F^2}{
+    \sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t}
+$$
+\item Combinatorial! We propose to relax the constraint:
+$$
+    \sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}\leq t
+$$
+\item The ``clusterpath'' is the continuous path of optimal $\alpha$
+  obtained by varying $t$.
+\item Related work: ``fused lasso'' Tibshirani and Saunders (2005),
+``grouping pursuit'' Shen and Huang (2010), ``sum of norms'' Lindsten
+\emph{et al.}  (2011).
+  \end{itemize}
+  \end{minipage}
+  \begin{minipage}{2.5in}
+<<fig=T,tikz=T,external=T,echo=FALSE,results=hide,width=3,height=3.25>>=
+aplot <- interpretation()+
+  geom_point(data=data.frame(alpha.1=c(-0.88,-0.05),alpha.2=c(-1.04,0.06)))+
+  geom_text(aes(label=label),
+            data.frame(alpha.1=c(-0.8,-0.5),alpha.2=c(-1.05,0.1),
+                       label=c("\\scriptsize$\\alpha_1$",
+                         "\\scriptsize$\\alpha_{C}=\\alpha_2=\\alpha_3$")))
+print(aplot)
+@ 
+  \end{minipage}
 \end{frame}
+
+
+
+ANIMATION(lines)
+
 
 <<results=hide,echo=FALSE,fig=FALSE>>=
 path <- cvxmod.cluster(x,regularization.points=40)
@@ -283,6 +281,7 @@ interpretation(
   geom_segment(aes(start1,start2,xend=end1,yend=end2),
                data=data.frame(poly.list$width),
                colour="white"),
+  geom_text(aes(label=label),data=subset(norms,norm=="2")),
   geom_text(aes(label=label),data=data.frame(poly.list$ws)),
   geom_path(aes(group=row),data=data.frame(path),
             subset=.(s>=SVAL)),
@@ -331,7 +330,25 @@ ggplot(path,aes(alpha.2,alpha.1))+
 
 ANIMATION(panels)
 
+\frame{\tableofcontents}
+
 \section{Algorithms proposed to solve the clusterpath}
+
+\begin{frame}
+  \frametitle{An efficient path algorithm for the $\ell_1$ clusterpath}
+  \begin{itemize}
+\item Objective separable on each dimension $\alpha^k\in\RR^n$:
+  $$\min_\alpha f_1(\alpha)= \sum_{k=1}^p\sum_{i=1}^n(X_{ik}-\alpha_{ik})^2
+  +\lambda\sum_{i<j}|\alpha_{ik}-\alpha_{jk}|w_{ij}=\sum_{k=1}^p\min_{\alpha^k}f_1(\alpha^k)$$
+\item LARS-like path-following algorithm (Hoefling \emph{et al.}\
+  2009), checks for split of a cluster of size $n_C$ by solving a
+  max-flow problem: $O(n_C^3)$. \pause
+\item \textbf{Theorem}: the $\ell_1$ clusterpath with $w_{ij}=1$ is strictly
+  agglomerative, so no need to check for splits.
+\item $n-1$ joins on each of $p$ dimensions. Each join only costs
+  $O(\log n)$ using queues and linked lists: $O(pn\log n)$.
+\end{itemize}
+\end{frame}
 
 \begin{frame}
   \frametitle{We propose dedicated solvers for each norm}
@@ -345,47 +362,36 @@ Norm & Properties & Algorithm &Complexity & Problem sizes \\
  &\\
 2 &rotation invariant&active-set& $O(n^2p)$&medium $\approx10^3$ \\
 &\\
-$\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
+$\infty$ & piecewise linear&Frank-Wolfe&unknown*&medium $\approx 10^3$\\
 \hline
 \end{tabular}
 \end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{An efficient path algorithm for the $\ell_1$ clusterpath}
-  \begin{itemize}
-\item Objective separable on each dimension $\alpha^i\in\RR^n$:
-  $$\min_\alpha f_1(\alpha)= \sum_{k=1}^p\sum_{i=1}^n(X_{ik}-\alpha_{ik})^2
-  +\lambda\sum_{i<j}|\alpha_{ik}-\alpha_{jk}|=\sum_{k=1}^p\min_{\alpha^i}f_1(\alpha_i)$$
-\item Piecewise linearity.
-\item LARS-like path-following algorithm (Hoefling \emph{et al.}\
-  2009), checks for split of a cluster of size $n_C$ by solving a
-  max-flow problem: $O(n_C^3)$.
-\item \textbf{Theorem}: the $\ell_1$ clusterpath with $w_{ij}=1$ is strictly
-  agglomerative, so no need to check for splits.
-\item $n-1$ joins on each of $p$ dimensions. Each join only costs
-  $O(\log n)$ using queues and linked lists: $O(pn\log n)$.
-\item Exact solutions for the entire regularization path!
-\end{itemize}
+*each iteration of complexity $O(n^2p)$.
 \end{frame}
 
 \begin{frame}
   \frametitle{The spectral clusterpath}
+  Standard spectral clustering:
+  \begin{itemize}
+  \item Pairwise similarities: $W_{ij}=\exp(-\gamma||X_i-X_j||_2^2)$.
+  \item Normalized Laplacian: $L=D-W$.
+  \item K-means on the first few eigenvectors of $L$.
+  \end{itemize}
   2 possible problems with spectral clustering:
   \begin{itemize}
-  \item Hard-thresholding of eigenvectors:\\
-    $e_{01}(x)=1_{x\leq\Lambda}$ for some eigenvalue $\Lambda$.
+  \item Hard-thresholding when picking the first few eigenvectors.
   \item K-means on eigenvectors.
   \end{itemize}
   We propose:
   \begin{itemize}
-  \item Soft-thresholding of eigenvectors:\\
-    $e_{\exp}(x)=\exp(-\nu x)$ for some $\nu>0$.
-  \item Clusterpath on the eigenvectors.
+  \item Soft-thresholding eigenvectors based on eigenvalues.
+  \item Clusterpath on eigenvectors.
   \end{itemize}
 \end{frame}
 
-\section{Results and conclusions}
+\frame{\tableofcontents}
+
+\section{Results, conclusions, and open questions}
 
 \begin{frame}
   \frametitle{Typical results for several clustering algorithms}
@@ -395,31 +401,7 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
 \end{frame}
 
 \begin{frame}
-  \frametitle{Performance and timings over several simulations}
-\begin{tabular}{lrrrr}
-\hline
-  Clustering method & Rand & SD & Seconds & SD \\ 
-  \hline
-  $e_{\exp}$ spectral clusterpath & 0.99 & 0.00 & 8.49 & 2.64 \\ 
-  $e_{\exp}$ spectral kmeans & 0.99 & 0.00 & 3.10 & 0.08 \\ 
-  clusterpath & 0.95 & 0.12 & 29.47 & 2.31 \\ 
-  $e_{01}$ Ng et al. kmeans & 0.95 & 0.19 & 7.37 & 0.42 \\ 
-  $e_{01}$ spectral kmeans & 0.91 & 0.19 & 3.26 & 0.21 \\ 
-  Gaussian mixture & 0.42 & 0.13 & 0.07 & 0.00 \\
-  average linkage & 0.40 & 0.13 & 0.05 & 0.00 \\ 
-  kmeans & 0.26 & 0.04 & 0.01 & 0.00 \\ 
-  \hline
-\end{tabular}
-
-Performance measured using the Normalized Rand Index (Hubert and Arabie 1985).
-\begin{itemize}
-\item 0 means random assignment.
-\item 1 means perfect correspondence, up to label permutation.
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Conclusions and future work}
+  \frametitle{Conclusions: our contributions}
   \begin{itemize}
   \item We proposed a new family of \alert<1>{convex} objective
     functions for clustering.
@@ -429,13 +411,20 @@ Performance measured using the Normalized Rand Index (Hubert and Arabie 1985).
   clustering.
 \item Free, open-source R/C++/Python optimization software available:
   \url{http://clusterpath.r-forge.r-project.org}
-\item Benefit of relaxing the eigenvector thresholding in spectral
-  clustering. Generality?
-\item Open question: hierarchical clusterpath for which other weights
-  and norms?
-\item Learning the weights and number of clusters automatically?
-\end{itemize}
-\only<2>{Thank you, any questions?}
+  \end{itemize}
+\end{frame}
+  
+\begin{frame}
+  \frametitle{Open questions}
+  \begin{itemize}
+  \item Benefit of relaxing the eigenvector thresholding in spectral
+    clustering. Generality?
+  \item Open question: hierarchical clusterpath for which other weights
+    and norms?
+  \item Learning the weights and number of clusters automatically?
+  \end{itemize}
+  \only<2>{Thank you, any questions? \\You can contact me directly at
+    toby.hocking@inria.fr.}
 \end{frame}
 
 \end{document}
