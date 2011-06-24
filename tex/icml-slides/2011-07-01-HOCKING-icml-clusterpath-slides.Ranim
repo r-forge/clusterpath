@@ -148,7 +148,7 @@ $$
       \item $p=2$ dimensions.
       \item Approximate $X$ using $\alpha$: $ \min_\alpha||\alpha-X||^2_F $
       \item Constrain the total distance between every pair of points:
-        $\sum_{i<j}||\alpha_i-\alpha_j||_q \leq t$
+        $$\sum_{i<j}||\alpha_i-\alpha_j||_q \leq t$$
         (grey lines)
       \end{itemize}
   \end{minipage}
@@ -271,7 +271,7 @@ print(interpretation(
 \end{frame}
 
 <<results=hide,echo=FALSE,fig=FALSE>>=
-path <- cvxmod.cluster(x,regularization.points=20)
+path <- cvxmod.cluster(x,regularization.points=40)
 plotpolys <- function(Slim){
   SVAL <- min(subset(path,s>=Slim)$s)
 a <- path[path$s==SVAL,]
@@ -361,7 +361,7 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
 \item LARS-like path-following algorithm (Hoefling \emph{et al.}\
   2009), checks for split of a cluster of size $n_C$ by solving a
   max-flow problem: $O(n_C^3)$.
-\item Theorem: the $\ell_1$ clusterpath with $w_{ij}=1$ is strictly
+\item \textbf{Theorem}: the $\ell_1$ clusterpath with $w_{ij}=1$ is strictly
   agglomerative, so no need to check for splits.
 \item $n-1$ joins on each of $p$ dimensions. Each join only costs
   $O(\log n)$ using queues and linked lists: $O(pn\log n)$.
@@ -373,13 +373,14 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
   \frametitle{The spectral clusterpath}
   2 possible problems with spectral clustering:
   \begin{itemize}
-  \item Hard-thresholding of eigenvectors:
+  \item Hard-thresholding of eigenvectors:\\
     $e_{01}(x)=1_{x\leq\Lambda}$ for some eigenvalue $\Lambda$.
   \item K-means on eigenvectors.
   \end{itemize}
   We propose:
   \begin{itemize}
-  \item Soft-thresholding of eigenvectors: $e_{\exp}(x)=\exp(-\nu x)$.
+  \item Soft-thresholding of eigenvectors:\\
+    $e_{\exp}(x)=\exp(-\nu x)$ for some $\nu>0$.
   \item Clusterpath on the eigenvectors.
   \end{itemize}
 \end{frame}
@@ -423,13 +424,18 @@ Performance measured using the Normalized Rand Index (Hubert and Arabie 1985).
   \item We proposed a new family of \alert<1>{convex} objective
     functions for clustering.
   \item Using $w_{ij}=1$ with the $\ell_1$ norm, we have
-    \alert<2>{hierarchical} clustering and complexity $O(pn\log n)$.
-\item Open question: hierarchical clustering for which other weights
-  and norms?
-\item \alert<3>{Performance} of weighted $\ell_2$ similar to spectral
+    \alert<1>{hierarchical} clustering and complexity $O(pn\log n)$.
+\item \alert<1>{Performance} of weighted $\ell_2$ similar to spectral
   clustering.
+\item Free, open-source R/C++/Python optimization software available:
+  \url{http://clusterpath.r-forge.r-project.org}
+\item Benefit of relaxing the eigenvector thresholding in spectral
+  clustering. Generality?
+\item Open question: hierarchical clusterpath for which other weights
+  and norms?
+\item Learning the weights and number of clusters automatically?
 \end{itemize}
-\only<4>{Thank you, any questions?}
+\only<2>{Thank you, any questions?}
 \end{frame}
 
 \end{document}
