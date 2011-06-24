@@ -249,8 +249,8 @@ theme_set(theme_bw())
 interpretation <- function(...){
   p <- ggplot(NULL,aes(alpha.1,alpha.2))+
     coord_equal()+
-    scale_x_continuous("$\\alpha^1$",breaks=c(-10))+
-    scale_y_continuous("$\\alpha^2$",breaks=c(-10))+
+    scale_x_continuous("$\\alpha^1$",limits=c(-1,0.6),breaks=c(-10))+
+    scale_y_continuous("$\\alpha^2$",limits=c(-1.3,0.6),breaks=c(-10))+
     geom_text(aes(label=label),
             data=data.frame(alpha.1=c(-1,x[2,1]-0.05,0.35),
               alpha.2=c(-1.25,0.35,x[3,2]),
@@ -276,7 +276,7 @@ plotpolys <- function(Slim){
   SVAL <- min(subset(path,s>=Slim)$s)
 a <- path[path$s==SVAL,]
 poly.list <- getpolys(a)
-print(interpretation(
+interpretation(
   geom_polygon(aes(group=interaction(pair,rect.num)),
                data=data.frame(poly.list$polys),
                fill="grey",colour="white",lwd=1.2),
@@ -285,8 +285,9 @@ print(interpretation(
                colour="white"),
   geom_text(aes(label=label),data=data.frame(poly.list$ws)),
   geom_path(aes(group=row),data=data.frame(path),
-            subset=.(s>=SVAL))
-                     ))
+            subset=.(s>=SVAL)),
+               geom_point(data=data.frame(a))
+                     )
 }
 @ 
 
@@ -372,16 +373,16 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
 \begin{frame}
   \frametitle{Typical results for several clustering algorithms}
   \includegraphics[width=\textwidth]{moons}
+
+  Weighted $\ell_2$ clusterpath with $\gamma=2$.
 \end{frame}
 
 \begin{frame}
   \frametitle{Performance and timings over several simulations}
 \begin{tabular}{lrrrr}
 \hline
-\abovespace\belowspace
   Clustering method & Rand & SD & Seconds & SD \\ 
   \hline
-\abovespace
   $e_{\exp}$ spectral clusterpath & 0.99 & 0.00 & 8.49 & 2.64 \\ 
   $e_{\exp}$ spectral kmeans & 0.99 & 0.00 & 3.10 & 0.08 \\ 
   clusterpath & 0.95 & 0.12 & 29.47 & 2.31 \\ 
@@ -389,8 +390,15 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown&medium $\approx 10^3$\\
   $e_{01}$ spectral kmeans & 0.91 & 0.19 & 3.26 & 0.21 \\ 
   Gaussian mixture & 0.42 & 0.13 & 0.07 & 0.00 \\
   average linkage & 0.40 & 0.13 & 0.05 & 0.00 \\ 
-\belowspace
   kmeans & 0.26 & 0.04 & 0.01 & 0.00 \\ 
+  \hline
+\end{tabular}
+
+Performance measured using the Normalized Rand Index (Hubert and Arabie 1985).
+\begin{itemize}
+\item 0 means random assignment.
+\item 1 means perfect correspondence, up to label permutation.
+\end{itemize}
 \end{frame}
 
 \begin{frame}
