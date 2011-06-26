@@ -1,7 +1,7 @@
 \documentclass[final]{beamer} 
 \usetheme[headheight=10cm,footheight=5cm]{boxes}
 \usetheme{toby}
-%\usepackage{times}
+\usepackage{booktabs}
 \usepackage{etex}
 \usepackage{amsmath,amssymb}
 \usepackage[latin1]{inputenc}
@@ -47,67 +47,79 @@
 % \item Proximal operator solved with \rred{network flow optimization}.
 % \end{itemize}
 % \end{block}
-\begin{block}{The clustering problem: existing methods}
-  \begin{itemize}
-  \item Clustering: assign labels to $n$ points in $p$ dimensions
+\begin{block}{The clustering problem: different appraoches}
+\begin{minipage}{4in}
+  Clustering: assign labels to $n$ points in $p$ dimensions
     $X\in\RR^{n\times p}$.
-  \item Methods:
+\end{minipage}
+\hspace{1in}
+\begin{minipage}{4in}
+  Methods:
     \begin{itemize}
   \item K-means
   \item Hierarchical
   \item Mixture models
   \item Spectral (Ng \emph{et al.} 2001)
-  \item ... 
     \end{itemize}
-    \item Issues:
+\end{minipage}
+\begin{minipage}{4in}
+    Issues:
     \begin{itemize}
     \item Hierarchy
     \item Convexity
     \item Greediness
     \item Stability
+    \item Interpretability 
   \end{itemize}
-  \end{itemize}
+\end{minipage}
 \end{block}
 
 
 \begin{block}{Clusterpath: a convex relaxation of hierarchical
     clustering}
 \begin{itemize}
-\item A hard-thresholding of differences is a combinatorial problem:
+\item Hard-thresholding of differences is a combinatorial problem:
 $
  \min_{    \alpha\in\RR^{n\times p}}       ||\alpha-X||_F^2 \text{  subject to  }
 \sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t$
-\item Relaxation:$\sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}\leq t$
+\item \alert{Relaxation:$\sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}\leq t$}
 \item The Lagrange form is useful for optimization algorithms:
 $$
 \alpha^*(X,\lambda,q,w)=\operatorname{argmin}_{\alpha\in\RR^{n\times p}}
 \frac 1 2||\alpha-X||_F^2+\lambda\sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}
-$$
+$$ 
 \item The \alert<1>{clusterpath} of $X$ is the path of optimal
   $\alpha^*$ obtained by varying $\lambda$, for fixed weights
   $w_{ij}\in\RR^+$ and norm $q\in\{1,2,\infty\}$.
-\item
+\item 
  Related work: ``fused lasso'' Tibshirani and Saunders (2005),
 ``grouping pursuit'' Shen and Huang (2010), ``sum of norms'' Lindsten
 \emph{et al.}  (2011).
-\end{itemize}
-
-
+\end{itemize} 
 \end{block}
-
+\input{cvx-allnorms}
+\input{geometry} 
+\vspace{-1in}
+\begin{block}{We propose dedicated algorithms for each norm}
+{\small
+\begin{center}
+\begin{tabular}{ccccc}
+\hline
+Norm & Properties & Algorithm &Complexity & Problem sizes \\
+\hline
+1 &piecewise linear, separable&path&$O(pn\log n)$&large $\approx 10^5$  \\
+2 &rotation invariant&active-set& $O(n^2p)$&medium $\approx10^3$ \\
+$\infty$ & piecewise linear&Frank-Wolfe&unknown*&medium $\approx 10^3$\\
+\hline
+\end{tabular}
+\end{center}
+*each iteration of complexity $O(n^2p)$.
+}
+\end{block}
 
 \end{column}\hfill
 
 \begin{column}{0.315\linewidth}
-\begin{block}{Hierarchical norms: Jenatton et al, ICML 2010} 
-\begin{itemize}
-   \item A set of groups is \rred{tree-structured} if $$\forall g,h \in \GG,~~ g \cap h = \emptyset ~~\text{or}~~ g \subset h ~~\text{or}~~ h \subset g.$$
-   \item Order the groups $g_1,\ldots,g_m$ \rred{from the leaves to the root}.
-   \item The proximal operator admits a \rred{closed form}: $$\text{Prox}_{\lambda\Omega} = \text{Prox}^{g_1} \circ \ldots \circ \text{Prox}^{g_m}.$$
-   \item Sequence of small proximal operators/projections.
-   \item \rred{$O(p)$ operations} for $\ell_2$-norms ($O(pd)$ for $\ell_\infty$-norms).
-\end{itemize}
-\end{block}
 
 \begin{block}{Outline of the $\ell_1$ path algorithm}
 Condition sufficient for optimality:
@@ -140,11 +152,8 @@ $$v_C = \frac{
 
 \input{l1-2d}\input{l1-dims}
 
-
-\end{column}\hfill
-\begin{column}{0.315\linewidth}
-\begin{alertblock}{Code!
-    \textbf{\url{http.//clusterpath.r-forge.r-project.org/}}}
+\begin{alertblock}{Free software!
+    \textbf{\url{http://clusterpath.r-forge.r-project.org/}}}
 \begin{itemize}
 \item Dedicated C++ optimization algorithms with R interface.
   \begin{itemize}
@@ -157,40 +166,42 @@ $$v_C = \frac{
 \end{itemize}
 \end{alertblock}
 
+\end{column}\hfill
+\begin{column}{0.315\linewidth}
 
 
-\begin{block}{Experiments}
-{\bfseries Clustering 2 moons}
+
+\begin{block}{Clustering results}
 \begin{itemize}
-\item $\y = \X\w + \e$; $\X$, background images; $\e$ is sparse and structured.
-\item $p \approx 60\,000$; $|\GG| \approx 120\,000$; $|E| \approx 660\,000$; $1.5sec / \text{prox}$
+\item Cluster using the prior knowledge that there are 2 clusters.
+\item Quantify partition correspondence using the Normalized Rand
+  Index (Hubert and Arabie, 1985): 1 for perfect correspondence, 0 for
+  completely random assignment.
+\item Results for 2 non-convex interlocking half-moons in 2d:
+\begin{center}
+\begin{tabular}{lrrrr}
+\hline
+  Clustering method & Rand & SD & Seconds & SD \\ 
+  \hline
+  $e_{\exp}$ spectral clusterpath & 0.99 & 0.00 & 8.49 & 2.64 \\ 
+  $e_{\exp}$ spectral kmeans & 0.99 & 0.00 & 3.10 & 0.08 \\ 
+  $\ell_2$ clusterpath & 0.95 & 0.12 & 29.47 & 2.31 \\ 
+  $e_{01}$ Ng et al. kmeans & 0.95 & 0.19 & 7.37 & 0.42 \\ 
+  $e_{01}$ spectral kmeans & 0.91 & 0.19 & 3.26 & 0.21 \\ 
+  Gaussian mixture & 0.42 & 0.13 & 0.07 & 0.00 \\
+  average linkage & 0.40 & 0.13 & 0.05 & 0.00 \\ 
+  kmeans & 0.26 & 0.04 & 0.01 & 0.00 \\ 
+\hline
+\end{tabular}
+\end{center}
+\item Similar performance to spectral clustering, and learns a tree:
 \end{itemize}
-   \begin{figure}
-      \centering
-    \caption{{\small Original, est. background, est. foreground with $\ell_1$, with $\ell_1+\Omega$.}}
-   \end{figure}
-\vspace*{-0.3cm}
-{\bfseries Multi-task learning of hierarchical structures}
-   \begin{displaymath}
-    \min_{\X,\W}
-    \frac{1}{n}\sum_{i=1}^n\!\Big[\frac{1}{2} \|\y^i-\X\w^i\|_2^2 + \lambda_1 \Omega_{\text{tree}}(\w^i)\Big]\!+\!\lambda_2\Omega_{\text{joint}}(\W),\ \text{s.t.}\
-    \forall j,~~\|\x^j\|_2\leq 1, 
-\end{displaymath}
-$n=10\,000$ image patches; $p,|\GG| \approx 4\,000\,000$; $|E|\approx 12\,000\,000$
-\begin{figure}[hbtp]
-   \centering
-%   \includegraphics[width=0.42\linewidth]{images/tree2.png}\hfill
-%   \includegraphics[width=0.54\linewidth]{images/tree_denois.png} 
-   \caption{Example of hierarchy - Mean square error versus dictionary size. 
-   } \label{fig:tree}
-\end{figure}
 \end{block}
 \includegraphics[width=0.3\paperwidth]{moons}
 
+The weighted $\ell_2$ clusterpath applied to the iris data:
 \includegraphics{iris-clusterpath}
-{\small
-\input{moons-iris}
-}
+\input{moons-iris} 
 
 
 \end{column}
