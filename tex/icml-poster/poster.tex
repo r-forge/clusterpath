@@ -47,63 +47,52 @@
 % \item Proximal operator solved with \rred{network flow optimization}.
 % \end{itemize}
 % \end{block}
-\begin{block}{Problem setting}
-\begin{itemize}
-\item We are interested in solving
- {\large
- \begin{displaymath}
-     \min_{\w \in \Real^p} f(\w) + \lambda \sum_{g \in \GG} \eta_g \|\w_g\|_\infty.
- \end{displaymath}
- }
-\item $f$ is a \rred{convex smooth function} (empirical risk, data-fitting term).
-\item $p$ can be large (up to $\approx10^6$).
-\item $\GG$ is a set of \rred{overlapping} groups of variables.
-\end{itemize}
-\vspace*{0.5cm}
-\textbf{Q: Why such a regularization?}
-\begin{itemize}
-   \item the $\ell_1$ does not encode structure, just \rred{cardinality}.
-   \item variables are sometimes organized into groups that are
-   \begin{itemize}
-\normalsize
-      \item \vspace*{0.2cm}\normalsize{non-overlapping}; (\small{Yuan and Lin '06})
-      \item \vspace*{0.2cm}\normalsize{tree-structured}; (\small{Zhao et al '09})
-      \item \normalsize{\rred{overlapping}}; \\ (\small{Jenatton et al '09, Jacob et al '09, Huang et al '09, Baraniuk et al '08})
-   \end{itemize}
-   \item The following penalty {\small(Jenatton et al '09)}
- {\large
-\begin{displaymath}
-  \Omega(\w) \defin  \sum_{g \in \GG} \eta_g \|\w_g\|_\infty,
-\end{displaymath}
-}
-\hspace*{-0.5cm}encourages variables in a same group to be set to zero~together.
-\item \rred{The goal is to encode a-priori knowledge by designing groups}.
-\end{itemize}
+\begin{block}{The clustering problem: existing methods}
+  \begin{itemize}
+  \item Clustering: assign labels to $n$ points in $p$ dimensions
+    $X\in\RR^{n\times p}$.
+  \item Methods:
+    \begin{itemize}
+  \item K-means
+  \item Hierarchical
+  \item Mixture models
+  \item Spectral (Ng \emph{et al.} 2001)
+  \item ... 
+    \end{itemize}
+    \item Issues:
+    \begin{itemize}
+    \item Hierarchy
+    \item Convexity
+    \item Greediness
+    \item Stability
+  \end{itemize}
+  \end{itemize}
 \end{block}
-\begin{block}{Proximal gradient algorithms}
-   \begin{itemize}
-      \item Generalizes the idea of gradient descent
-         \begin{displaymath}
-            \begin{split}
-               \w^{k+1} & \!\leftarrow \!\argmin_{\w \in \Real^p} {\underbrace{f(\w^k)\! +\! \nabla f(\w^k)^\top(\w-\w^k)}_{\text{linear approximation}}} + {\underbrace{\frac{L}{2}\|\w-\w^k\|_2^2}_{\text{quadratic term}}} \!+\! \lambda\Omega(\w) \\
-               & \leftarrow \argmin_{\w \in \Real^p} \frac{1}{2}\|(\w^k - \frac{1}{L}\nabla f(\w^k))-\w\|_2^2 + \frac{\lambda}{L}\Omega(\w). 
-            \end{split}
-         \end{displaymath}
-      \item They require solving efficiently the {\rred{proximal operator $\text{Prox}_{\lambda\Omega}$}}
-{\large
-         \begin{displaymath}
-           \u \to \argmin_{\w \in \Real^p} ~ \frac{1}{2}\|\u-\w\|_2^2 +  \lambda\Omega(\w).
-         \end{displaymath}
-}
-%          \begin{displaymath}
-%             \w^\star_i= \sign(\u_i) (\u_i-\lambda)^+.
-%          \end{displaymath}
-      \item Accelerated versions based on Nesterov first-order method.
-      \item For the $\ell_1$-norm, soft-thresholding $$\u_i \to  \sign(\u_i) \max(|\u_i|-\lambda,0).$$
-      \item For non-overlapping groups with $\ell_2$-norms, $$\u_g \to \frac{\u_g}{\|\u_g\|_2}\max(\|\u_g\|_2-\lambda,0),$$
-      \item For non-overlapping groups with $\ell_\infty$-norms, $$\u_g \to \u_g - \Pi_{\|.\|_1 \leq \lambda}[\u_g].$$
-      \item \rred{As soon as the groups overlap, the problem is difficult}.
-   \end{itemize}
+
+
+\begin{block}{Clusterpath: a convex relaxation of hierarchical
+    clustering}
+\begin{itemize}
+\item A hard-thresholding of differences is a combinatorial problem:
+$
+ \min_{    \alpha\in\RR^{n\times p}}       ||\alpha-X||_F^2 \text{  subject to  }
+\sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t$
+\item Relaxation:$\sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}\leq t$
+\item The Lagrange form is useful for optimization algorithms:
+$$
+\alpha^*(\lambda,q,w)=\operatorname{argmin}_{\alpha\in\RR^{n\times p}}
+\frac 1 2||\alpha-X||_F^2+\lambda\sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}
+$$
+\item The \alert<1>{clusterpath} the continuous path of optimal
+  $\alpha^*$ obtained by varying $\lambda$, for fixed weights
+  $w_{ij}\in\RR^+$ and norm $q\in\{1,2,\infty\}$.
+\item
+ Related work: ``fused lasso'' Tibshirani and Saunders (2005),
+``grouping pursuit'' Shen and Huang (2010), ``sum of norms'' Lindsten
+\emph{et al.}  (2011).
+\end{itemize}
+
+
 \end{block}
 
 
@@ -119,43 +108,13 @@
    \item \rred{$O(p)$ operations} for $\ell_2$-norms ($O(pd)$ for $\ell_\infty$-norms).
 \end{itemize}
 \end{block}
-\begin{block}{Dual formulation of the proximal operator} 
-   {\color{red} Idea: no more overlaps in the dual problem}
-\begin{itemize}
-\item One dual variable $\xib^g$ per group $g$ in $\GG$.
-{\large
-\begin{multline*}
-\min_{\xib \in \Real^{p \times |\GG|}} \frac{1}{2}\big\| \u - \sum_{g \in \GG} \xib^g \big\|_2^2 \\ \st \forall g \in \GG,~~ \|\xib^g\|_1 \leq \lambda\eta_g ~~\text{and}~~ \xib^g_j = 0 ~~\text{if}~~ j \notin g.
-\end{multline*}
-}
-\item First step: Flip the signs of $\u$, and impose $\xib \geq 0$.
-\item This becomes a \rred{quadratic min-cost flow problem}.
-\end{itemize}
-\end{block}
-
-\begin{block}{Examples of Graph Modelling}
-\small{}
-\end{block}
-
-
-\end{column}\hfill
-\begin{column}{0.315\linewidth}
-\begin{alertblock}{Code!
-    \textbf{\url{http.//clusterpath.r-forge.r-project.org/}}}
-\begin{itemize}
-\item Dedicated C++ optimization algorithms with R interface.
-  \begin{itemize}
-  \item Path algorithm for $\ell_1$ norm with identity weights.
-  \item Active-set descent algorithm for $\ell_2$ problem.
-  \end{itemize}
-\item R interface to Python \texttt{cvxmod} clusterpath solver.
-\item Clusterpath visualizations in 2d, 3d, and animations.
-\item Coming soon: picking the number of clusters automatically!
-\end{itemize}
-\end{alertblock}
-
 
 \begin{block}{Outline of the $\ell_1$ path algorithm}
+$$0 = \alpha_i - X_i + 
+\lambda \sum_{j\neq i\atop \alpha_i \neq \alpha_j}w_{ij}
+\operatorname{sign}({\alpha_i-\alpha_j}) + 
+\lambda \sum_{j\neq i \atop \alpha_i = \alpha_j}w_{ij} \beta_{ij},$$
+with $|\beta_{ij}|\leq 1$ and $\beta_{ij}=-\beta_{ji}$ (Hoefling 2009).
 \begin{enumerate}
 \item For $\lambda=0$ the solution $\alpha=X$ is optimal. We
   initialize the clusters $C_i = \{i\}$ and coefficients $\alpha_i =
@@ -181,8 +140,27 @@ $$v_C = \frac{
 
 \input{l1-2d}\input{l1-dims}
 
+
+\end{column}\hfill
+\begin{column}{0.315\linewidth}
+\begin{alertblock}{Code!
+    \textbf{\url{http.//clusterpath.r-forge.r-project.org/}}}
+\begin{itemize}
+\item Dedicated C++ optimization algorithms with R interface.
+  \begin{itemize}
+  \item Path algorithm for $\ell_1$ norm with identity weights.
+  \item Active-set descent algorithm for $\ell_2$ problem.
+  \end{itemize}
+\item R interface to Python \texttt{cvxmod} clusterpath solver.
+\item Clusterpath visualizations in 2d, 3d, and animations.
+\item Coming soon: picking the number of clusters automatically!
+\end{itemize}
+\end{alertblock}
+
+
+
 \begin{block}{Experiments}
-{\bfseries Background subtraction}~{\small (Cehver '08, Huang '09, Wright '08)}
+{\bfseries Clustering 2 moons}
 \begin{itemize}
 \item $\y = \X\w + \e$; $\X$, background images; $\e$ is sparse and structured.
 \item $p \approx 60\,000$; $|\GG| \approx 120\,000$; $|E| \approx 660\,000$; $1.5sec / \text{prox}$
@@ -218,6 +196,14 @@ $n=10\,000$ image patches; $p,|\GG| \approx 4\,000\,000$; $|E|\approx 12\,000\,0
    } \label{fig:tree}
 \end{figure}
 \end{block}
+\includegraphics[width=0.3\paperwidth]{moons}
+
+\includegraphics{iris-clusterpath}
+{\small
+\input{moons-iris}
+}
+
+
 \end{column}
 \end{columns}
 
