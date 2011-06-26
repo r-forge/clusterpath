@@ -1,5 +1,5 @@
-% -*- mode: noweb; noweb-code-mode: R-mode -*-
-\documentclass[final]{beamer}
+% -*- mode: noweb; noweb-code-mode: R-mode -*- 
+\documentclass[final]{beamer}  
 \usetheme[headheight=10cm,footheight=5cm]{boxes}
 \usetheme{toby}
 %\usepackage{times}
@@ -17,12 +17,10 @@
 \usepackage{epsfig}
 \usepackage{eulervm}
 \usepackage{tikz}
-\usepackage[nogin]{Sweave}
 \usepackage{array}
 \usepackage{subfigure}
-\SweaveOpts{width=5,height=3.25,keep.source=TRUE,echo=FALSE,results=hide,fig=TRUE,tikz=TRUE,external=TRUE}
 \usepackage{graphicx}
- 
+  
 % \usepackage[size=custom,width=3.0,height=120,scale=2,debug]{beamerposter}  % e.g. custom size poster
 
 \usepackage{beamerthemetoby}
@@ -182,9 +180,7 @@ $$v_C = \frac{
 
 \end{block}
 
-<<fig=TRUE,tikz=TRUE,external=TRUE,results=hide,echo=F,width=14,height=5.25>>=
-
-@ 
+\input{l1-2d}
 
 
 \begin{block}{Experiments}
