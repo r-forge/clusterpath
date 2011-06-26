@@ -16,15 +16,15 @@
 \usepackage{epsfig}
 \usepackage{eulervm}
 \usepackage{tikz}
+\usepackage[nogin]{Sweave}
 \usepackage{array}
 \usepackage{subfigure}
 \usetikzlibrary{arrows,shapes,snakes,automata,backgrounds,petri}
-
-%\usepackage{floatflt}
-%\usepackage[dvips]{graphicx}
-%\usepackage{graphicx}
+%\SweaveOpts{width=5,height=3.25,keep.source=TRUE,echo=FALSE,results=hide,fig=TRUE,tikz=TRUE,external=TRUE}
+\usepackage{graphicx}
  
-%\usepackage[size=custom,width=3.0,height=120,scale=2,debug]{beamerposter}  % e.g. custom size poster
+% \usepackage[size=custom,width=3.0,height=120,scale=2,debug]{beamerposter}  % e.g. custom size poster
+
 \usepackage{beamerthemejulien}
 
 \input{macros.tex}
@@ -32,15 +32,11 @@
 \definecolorset{rgb}{}{}{inriablue,0.35,0.31,0.75}
 \newcommand{\bblue}[1]{{\textcolor{inriablue}{#1}}}
 
-\title[Network Flow Algorithms for Structured Sparsity]{\veryHuge{Network Flow Algorithms for Structured Sparsity}}
-\author[Julien Mairal]{
-   Julien Mairal \and
-      Rodolphe Jenatton \and
-      Guillaume Obozinski \and
-      Francis Bach 
-}
-\institute[Willow Project Team - INRIA/ENS/CNRS]{~}
-% 
+\title[]{\veryHuge{Clusterpath: an Algorithm for Clustering using Convex Fusion Penalties}}
+\author[]{Toby Dylan Hocking \and
+      Armand Joulin \and
+      Francis Bach \and
+      Jean-Philippe Vert}
 \begin{document}
 \begin{frame}{} 
 \begin{columns}[T]
@@ -244,33 +240,44 @@
 
 \end{column}\hfill
 \begin{column}{0.315\linewidth}
-\begin{alertblock}{Code available! \textbf{\url{http.//www.di.ens.fr/willow/SPAMS/}}}
-\textbf{SPAMS v2.0} (C++ with Matlab interface) implements:
-\begin{enumerate}
-\item Proximal methods (ISTA/FISTA) with duality gaps for
+\begin{alertblock}{Code!
+    \textbf{\url{http.//clusterpath.r-forge.r-project.org/}}}
 \begin{itemize}
-\item square, logistic and multiclass logistic loss functions;
-\item simple norms $\ell_1$, $\ell_2$; mixed-norms $\ell_{1,2}$, $\ell_{1,\infty}$, $\ell_{1,2}+\ell_1$, $\ell_{1,\infty}+\ell_1$;
-\item tree-structured $\ell_{2}$- or $\ell_{\infty}$-norms; sum of $\ell_{\infty}$-norms with overlapping groups.
+\item Dedicated C++ optimization algorithms with R interface.
+  \begin{itemize}
+  \item Path algorithm for $\ell_1$ norm with identity weights.
+  \item Active-set descent algorithm for $\ell_2$ problem.
+  \end{itemize}
+\item R interface to Python \texttt{cvxmod} clusterpath solver.
+\item Clusterpath visualizations in 2d, 3d, and animations.
+\item Coming soon: picking the number of clusters automatically!
 \end{itemize}
-\item Various fast sparse solvers:
-\begin{itemize}
-\item $\ell_1$-solvers: LARS, coordinate descent; Greedy algorithms (OMP),\ldots
-\item Various fast Euclidean projections (simplex, $\ell_1$-ball, $\ell_1\!+\!\ell_2^2$,  $\ell_1\!+\!\text{TV}\!+\!\ell_2^2$\ldots).
-\end{itemize}
-
-\item Dictionary learning and matrix factorization (NMF, sparse PCA)
-\end{enumerate}
 \end{alertblock}
-\begin{block}{Idea of the algorithm: Divide and conquer}
+
+
+\begin{block}{Outline of the $\ell_1$ path algorithm}
 \begin{enumerate}
-   \item Solve a relaxed problem in linear time.
-   \item Check whether the solution is feasible with a max-flow.
-   \item If yes, it is optimal and stop the algorithm.
-   \item If not, find a minimum cut and removes the arcs along the cut.
-   \item Recursively process the two subgraphs defined by the cut.
+\item For $\lambda=0$ the solution $\alpha=X$ is optimal. We
+  initialize the clusters $C_i = \{i\}$ and coefficients $\alpha_i =
+  X_i$ for all $i$.
+\item As $\lambda$ increases, the solutions will follow straight
+  lines until they hit.
+\item Taking the derivative of the optimality condition with respect
+  to $\lambda$ leads to the following expression for the velocity of
+  the initial clusters:
+$$v_i = \sum_{j\neq i}w_{ij}\sign(\alpha_j-\alpha_i)$$
+\item When 2 clusters $C_1$ and $C_2$ hit, they will merge to form a
+  new cluster $C = C_1\cup C_2$ and take a new velocity:
+$$v_C = \frac{
+|C_1|v_1 + |C_2|v_2
+}{
+|C_1|+|C_2|
+}$$
+\item Stop when all the points merge at the mean $\bar X$.
+\item Combine dimensions using $\lambda$ values.
 \end{enumerate}
-Similar algorithm in submodular functions literature {\small (Groenevelt '91)}.
+
+
 \end{block}
 
 \begin{block}{Experiments}
