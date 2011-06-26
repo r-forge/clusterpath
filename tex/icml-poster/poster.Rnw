@@ -1,7 +1,7 @@
 % -*- mode: noweb; noweb-code-mode: R-mode -*-
 \documentclass[final]{beamer}
 \usetheme[headheight=10cm,footheight=5cm]{boxes}
-\usetheme{julien}
+\usetheme{toby}
 %\usepackage{times}
 \usepackage{etex}
 \usepackage{amsmath,amssymb}
@@ -26,7 +26,7 @@
  
 % \usepackage[size=custom,width=3.0,height=120,scale=2,debug]{beamerposter}  % e.g. custom size poster
 
-\usepackage{beamerthemejulien}
+\usepackage{beamerthemetoby}
 
 \input{macros.tex}
 \newcommand{\rred}[1]{{\textcolor{red}{#1}}}
