@@ -154,7 +154,7 @@ for(norm in c(1,2,"inf"))for(gamma in c(0,1)){
 }
 means <- data.frame(alpha=t(colMeans(sim$mat)))
 p <- ggplot(cvx,aes(alpha.2,alpha.1))+
-  geom_text(data=means,label="$\\bar X$",col="grey")+
+  geom_text(data=means,label="$\\overline X$",col="grey")+
   ##geom_point(aes(size=s),alpha=1/4)+
   geom_path(aes(group=row),colour="black",lwd=1)+
   facet_grid(gamma~norm,labeller=function(var,val){
