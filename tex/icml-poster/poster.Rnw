@@ -20,7 +20,6 @@
 \usepackage[nogin]{Sweave}
 \usepackage{array}
 \usepackage{subfigure}
-\usetikzlibrary{arrows,shapes,snakes,automata,backgrounds,petri}
 \SweaveOpts{width=5,height=3.25,keep.source=TRUE,echo=FALSE,results=hide,fig=TRUE,tikz=TRUE,external=TRUE}
 \usepackage{graphicx}
  
@@ -136,107 +135,9 @@
 \item This becomes a \rred{quadratic min-cost flow problem}.
 \end{itemize}
 \end{block}
+
 \begin{block}{Examples of Graph Modelling}
-\small{
-\begin{figure}[hbtp!]
-\tikzstyle{source}=[circle,thick,draw=blue!75,fill=blue!20,minimum size=18mm]
-\tikzstyle{sink}=[circle,thick,draw=blue!75,fill=blue!20,minimum size=18mm]
-\tikzstyle{group}=[place,thick,draw=red!75,fill=red!20, minimum size=18mm]
-\tikzstyle{var}=[rectangle,thick,draw=black!75,fill=black!20,minimum size=14mm]
-\def\distnode{3.8cm}
-\def\distnodex{5.5cm}
-\tikzstyle{every label}=[red]
-   \begin{center}
-      ~~\subfigure[$\GG\!=\!\{ g\!=\!\{1,2,3\} \}$.]{
-      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
-         \begin{scope}
-            \node [source]   (s)                                    {$s$};
-            \node [group]    (g1)  [below of=s]                      {$g$}
-            edge  [pre,line width=0.1cm] node[left,xshift=1mm] {$\xib^g_1 \!+\! \xib^g_2 \!+\! \xib^g_3 \!\leq\! \lambda \eta_g$} (s);
-            \node [var] (u2) [below of=g1]                    {$\u_2$}
-            edge  [pre,line width=0.1cm] node[above, left,xshift=1mm] {$\xib^{g}_2$} (g1);
-            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
-            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g1);
-            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
-            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{g}_3$} (g1);
-            \node [sink] (si) [below of=u2] {$t$}
-            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
-            edge [pre,line width=0.1cm] node[above,left,xshift=3mm] {$\color{red} c_2$} (u2)
-            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
-         \end{scope}
-      \end{tikzpicture}\label{subfig:grapha}
-      } \hfill 
-      \subfigure[$\GG\!=\!\{ g\!=\!\{1,2\},h\!=\!\{2,3\} \}$.]{
-      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
-         \begin{scope}
-            \node [source]   (s)                                    {$s$};
-            \node [group]    (g)  [below of=s,xshift=-30mm]                      {$g$}
-            edge  [pre,line width=0.1cm] node[left] {$\xib^g_1 \!+ \!\xib^g_2 \!\leq \!\lambda \eta_g$} (s);
-            \node [group]    (h)  [below of=s,xshift=30mm]                      {$h$}
-            edge  [pre,line width=0.1cm] node[right] {$\xib^h_2 \!+ \!\xib^h_3 \!\leq \!\lambda \eta_h$} (s);
-            \node [var] (u2) [below of=g,xshift=30mm]                    {$\u_2$}
-            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{h}_2$} (h)
-            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_2$} (g);
-            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
-            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g);
-            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
-            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{h}_3$} (h);
-            \node [sink] (si) [below of=u2] {$t$}
-            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
-            edge [pre,line width=0.1cm] node[above,left,xshift=1mm] {$\color{red} c_2$} (u2)
-            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
-         \end{scope}
-      \end{tikzpicture}\label{subfig:graphb}
-      } ~~~\\
-      \subfigure[$\GG\!=\!\{ g\!=\!\{1,2,3\},h\!=\!\{2,3\} \}$.]{
-      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
-         \begin{scope}
-            \node [source]   (s)                                    {$s$};
-            \node [group]    (g)  [below of=s]                      {$g$}
-            edge  [pre,line width=0.1cm] node[left] {$\xib^g_1 \!+ \!\xib^g_2 \!+ \!\xib^g_3 \!\leq \!\lambda \eta_g$} (s);
-            \node [group]    (h)  [right of=g,node distance=\distnodex]                      {$h$}
-            edge  [pre,line width=0.1cm] node[right,xshift=-6mm,yshift=6mm] {$\xib^h_2 \!+ \!\xib^h_3 \!\leq \!\lambda \eta_h$} (s);
-            \node [var] (u2) [below of=g]                    {$\u_2$}
-            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{h}_2$} (h)
-            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_2$} (g);
-            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
-            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g);
-            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
-            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{g}_3$} (g)
-            edge  [pre,line width=0.1cm] node[above, right] {$\xib^{h}_3$} (h);
-            \node [sink] (si) [below of=u2] {$t$}
-            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
-            edge [pre,line width=0.1cm] node[above,left,xshift=1mm] {$\color{red} c_2$} (u2)
-            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
-         \end{scope}
-      \end{tikzpicture}\label{subfig:graphc}
-      } \hspace*{-0.5cm}
-      \subfigure[$\GG\!=\!\{ g\!=\!\{1\}\cup h,h\!=\!\{2,3\} \}$.]{
-      \begin{tikzpicture}[node distance=\distnode,>=stealth',bend angle=45,auto]
-         \begin{scope}
-            \node [source]   (s)                                    {$s$};
-            \node [group]    (g)  [below of=s]                      {$g$}
-            edge  [pre,line width=0.1cm] node[left,xshift=4mm] {$\xib^g_1 \!+ \!\xib^g_2 \!+ \!\xib^g_3 \!\leq \!\lambda \eta_g$} (s);
-            \node [group]    (h)  [right of=g, node distance=\distnodex]                      {$h$}
-            edge  [pre,line width=0.1cm] node[right,yshift=1mm] {$\xib^h_2 \!+ \!\xib^h_3 \!\leq \!\lambda \eta_h$} (s)
-            edge  [pre,line width=0.1cm] node[below,yshift=4mm] {$\xib^g_2 \!+ \!\xib^g_3$} (g);
-            \node [var] (u2) [below of=g]                    {$\u_2$}
-            edge  [pre,line width=0.1cm] node[above,left] {$\xib^g_2\!+\!\xib^{h}_2$} (h);
-            \node [var] (u1)  [left of=u2, node distance=\distnodex] {$\u_1$}
-            edge  [pre,line width=0.1cm] node[above, left] {$\xib^{g}_1$} (g);
-            \node [var] (u3) [right of=u2, node distance=\distnodex] {$\u_3$}
-            edge  [pre,line width=0.1cm] node[above, right] {$\xib^g_3\!+\!\xib^{h}_3$} (h);
-            \node [sink] (si) [below of=u2] {$t$}
-            edge [pre,line width=0.1cm] node[above,left] {$\color{red} c_1$} (u1)
-            edge [pre,line width=0.1cm] node[above,left,xshift=1mm] {$\color{red} c_2$} (u2)
-            edge [pre,line width=0.1cm] node[above,right] {$\color{red} c_3$} (u3);
-         \end{scope}
-      \end{tikzpicture} \label{subfig:graphd}
-      } 
-   \end{center}
-   \caption{Graph representation of simple proximal problems.}
-\end{figure}
-}
+\small{}
 \end{block}
 
 
@@ -275,31 +176,16 @@ $$v_C = \frac{
 }{
 |C_1|+|C_2|
 }$$
-\item Stop when all the points merge at the mean $\bar X$.
+\item Stop when all the points merge at the mean $\overline X$.
 \item Combine dimensions using $\lambda$ values.
 \end{enumerate}
-<<fig=T,tikz=T,external=T,results=hide,echo=F,width=14,height=5.25>>=
-library(clusterpath)
-library(ggplot2)
-theme_set(theme_bw())
-set.seed(1 )
-sim <- gendata(5,2,2,0.3)
-pts <- data.frame(alpha=sim$mat)
-pts$row <- 1:nrow(pts)
-path <- clusterpath.l1.id(pts)
-plot(1)
-##path2d <- castbreakpoints(path)
-## p <- ggplot(pts,aes(alpha.2,alpha.1))+
-##   geom_path(aes(group=row),data=path2d)+
-##   geom_point(subset=.(row==10))+
-##   coord_equal()
-## print(p)
+
+\end{block}
+
+<<fig=TRUE,tikz=TRUE,external=TRUE,results=hide,echo=F,width=14,height=5.25>>=
 
 @ 
 
-
-
-\end{block}
 
 \begin{block}{Experiments}
 {\bfseries Background subtraction}~{\small (Cehver '08, Huang '09, Wright '08)}
