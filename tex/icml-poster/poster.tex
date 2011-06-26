@@ -75,8 +75,7 @@
 \end{block}
 
 
-\begin{block}{Clusterpath: a convex relaxation of hierarchical
-    clustering}
+\begin{block}{Clusterpath: relaxing a hard fusion penalty}
 \begin{itemize}
 \item Hard-thresholding of differences is a combinatorial problem:
 $
@@ -137,13 +136,12 @@ with $|\beta_{ij}|\leq 1$ and $\beta_{ij}=-\beta_{ji}$ (Hoefling 2009).
 \item Taking the derivative of the optimality condition with respect
   to $\lambda$ and summing over all points in a cluster $C$ leads to:
 $$\frac {d\alpha_C}{d\lambda}=v_C = \sum_{j\not\in C}w_{jC}\sign(\alpha_j-\alpha_C)=\sum_{j\not\in C}\sum_{i\in C} w_{ij}\sign(\alpha_j-\alpha_C)$$
-\item When 2 clusters $C_1$ and $C_2$ hit, they will merge to form a
-  new cluster $C = C_1\cup C_2$ and take a new velocity:
-$$v_C = \frac{
+\item When 2 clusters $C_1$ and $C_2$ fuse, they form a
+  new cluster $C = C_1\cup C_2$ with $v_C = (
 |C_1|v_1 + |C_2|v_2
-}{
+)/(
 |C_1|+|C_2|
-}$$
+)$.
 \item Stop when all the points merge at the mean $\overline X$.
 \item Combine dimensions using $\lambda$ values.
 \end{enumerate}
@@ -157,8 +155,9 @@ $$v_C = \frac{
 \begin{itemize}
 \item Dedicated C++ optimization algorithms with R interface.
   \begin{itemize}
-  \item Path algorithm for $\ell_1$ norm with identity weights.
-  \item Active-set descent algorithm for $\ell_2$ problem.
+  \item Calculates the exact $\ell_1$ clusterpath for identity weights.
+  \item Active-set algorithm for the $\ell_1$ and $\ell_2$
+    clusterpath with general weights.
   \end{itemize}
 \item R interface to Python \texttt{cvxmod} clusterpath solver.
 \item Clusterpath visualizations in 2d, 3d, and animations.
@@ -166,12 +165,18 @@ $$v_C = \frac{
 \end{itemize}
 \end{alertblock}
 
+\begin{block}{Future work}
+  \begin{itemize}
+  \item Necessary and sufficient conditions for cluster splitting?
+  \item Automatically learning weights and number of clusters?
+  \item Applications to solving proximal problems.
+  \end{itemize}
+\end{block}
 \end{column}\hfill
 \begin{column}{0.315\linewidth}
 
 
-
-\begin{block}{Clustering results}
+\begin{block}{Clustering performance and timings}
 \begin{itemize}
 \item Cluster using the prior knowledge that there are 2 clusters.
 \item Quantify partition correspondence using the Normalized Rand
