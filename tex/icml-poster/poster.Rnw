@@ -1,3 +1,4 @@
+% -*- mode: noweb; noweb-code-mode: R-mode -*-
 \documentclass[final]{beamer}
 \usetheme[headheight=10cm,footheight=5cm]{boxes}
 \usetheme{julien}
@@ -20,7 +21,7 @@
 \usepackage{array}
 \usepackage{subfigure}
 \usetikzlibrary{arrows,shapes,snakes,automata,backgrounds,petri}
-%\SweaveOpts{width=5,height=3.25,keep.source=TRUE,echo=FALSE,results=hide,fig=TRUE,tikz=TRUE,external=TRUE}
+\SweaveOpts{width=5,height=3.25,keep.source=TRUE,echo=FALSE,results=hide,fig=TRUE,tikz=TRUE,external=TRUE}
 \usepackage{graphicx}
  
 % \usepackage[size=custom,width=3.0,height=120,scale=2,debug]{beamerposter}  % e.g. custom size poster
@@ -37,6 +38,7 @@
       Armand Joulin \and
       Francis Bach \and
       Jean-Philippe Vert}
+    \institute[Sierra]{~}%DONT DELETE THIS
 \begin{document}
 \begin{frame}{} 
 \begin{columns}[T]
@@ -276,6 +278,25 @@ $$v_C = \frac{
 \item Stop when all the points merge at the mean $\bar X$.
 \item Combine dimensions using $\lambda$ values.
 \end{enumerate}
+<<fig=T,tikz=T,external=T,results=hide,echo=F,width=14,height=5.25>>=
+library(clusterpath)
+library(ggplot2)
+theme_set(theme_bw())
+set.seed(1 )
+sim <- gendata(5,2,2,0.3)
+pts <- data.frame(alpha=sim$mat)
+pts$row <- 1:nrow(pts)
+path <- clusterpath.l1.id(pts)
+plot(1)
+##path2d <- castbreakpoints(path)
+## p <- ggplot(pts,aes(alpha.2,alpha.1))+
+##   geom_path(aes(group=row),data=path2d)+
+##   geom_point(subset=.(row==10))+
+##   coord_equal()
+## print(p)
+
+@ 
+
 
 
 \end{block}
