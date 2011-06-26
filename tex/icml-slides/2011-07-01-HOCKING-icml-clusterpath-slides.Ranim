@@ -27,10 +27,6 @@
 
 
 \newcommand{\minimize}[3]{
-\begin{aligned}
-&  \min_{#1} && #2\\
-&  \text{subject to}&& #3
-\end{aligned}
 }
 
 
@@ -103,7 +99,24 @@
   \end{itemize}
   \end{itemize}
   \end{minipage}
-  \begin{minipage}{2in}
+  \begin{minipage}{2.5in}
+<<fig=T,tikz=T,external=T,results=hide,echo=F,width=3,height=3.25>>=
+centers <- expand.grid(x=c(1,6),y=c(0,5,10))
+centers$cluster <- 1:nrow(centers)
+N <- 100
+set.seed(9)
+library(plyr)
+pts <- ddply(centers,.(cluster),with,data.frame(
+      x=rnorm(N*length(x),x),
+      y=rnorm(N*length(y),y),
+      cluster=cluster))
+pts$kmeans <- kmeans(as.matrix(pts[,1:2]),nrow(centers))$cluster
+library(lattice)
+p <- xyplot(y~x,pts,groups=kmeans,aspect="iso",main="kmeans clustering",
+            xlab="",ylab="",scales=list())
+print(p)
+
+@     
   \end{minipage}
 \end{frame}
 
@@ -115,7 +128,9 @@
   \item Efficient algorithms.
   \item Clustering \alert<1>{performance} on par with spectral clustering.
   \end{itemize}
-  \includegraphics[width=\textwidth]{moons-clusterpath}
+  \begin{center}
+  \includegraphics[width=0.75\textwidth]{moons-clusterpath}
+  \end{center}
 \end{frame}
 
 
@@ -230,32 +245,31 @@ interpretation(
 
 \begin{frame}
   \frametitle{The clusterpath relaxes a hard fusion penalty}
-  \begin{minipage}{2in}
-    Want some points to be equal $\alpha_i=\alpha_j$:
-  \begin{itemize}
+  \begin{minipage}{2.5in}
 $$
-  \minimize{
-    \alpha\in\RR^{n\times p}}{
-    \frac 1 2 ||\alpha-X||_F^2}{
-    \sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t}
+\begin{aligned}
+&  \min_{    \alpha\in\RR^{n\times p}} &&     \frac 1 2 ||\alpha-X||_F^2\\
+&  \text{subject to}&&     \sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t
+\end{aligned}
 $$
-\item Combinatorial! We propose to relax the constraint:
+ Combinatorial! Relaxation:
 $$
     \sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}\leq t
 $$
-\item The ``clusterpath'' is the continuous path of optimal $\alpha$
+The \alert<1>{clusterpath} is the continuous path of optimal $\alpha$
   obtained by varying $t$.
-\item Related work: ``fused lasso'' Tibshirani and Saunders (2005),
+{\small
+ Related work: ``fused lasso'' Tibshirani and Saunders (2005),
 ``grouping pursuit'' Shen and Huang (2010), ``sum of norms'' Lindsten
-\emph{et al.}  (2011).
-  \end{itemize}
+\emph{et al.}  (2011).}
   \end{minipage}
-  \begin{minipage}{2.5in}
-<<fig=T,tikz=T,external=T,echo=FALSE,results=hide,width=3,height=3.25>>=
-aplot <- interpretation()+
-  geom_point(data=data.frame(alpha.1=c(-0.88,-0.05),alpha.2=c(-1.04,0.06)))+
+  \begin{minipage}{2in}
+<<fig=T,tikz=T,external=T,echo=FALSE,results=hide,width=2.5,height=3.25>>=
+aplot <- interpretation()+ xlab("")+ylab("")+
+  geom_point(data=data.frame(alpha.1=c(-0.88,-0.05),
+               alpha.2=c(-1.04,0.06)))+
   geom_text(aes(label=label),
-            data.frame(alpha.1=c(-0.8,-0.5),alpha.2=c(-1.05,0.1),
+            data.frame(alpha.1=c(-0.7,-0.6),alpha.2=c(-1.05,0.1),
                        label=c("\\scriptsize$\\alpha_1$",
                          "\\scriptsize$\\alpha_{C}=\\alpha_2=\\alpha_3$")))
 print(aplot)

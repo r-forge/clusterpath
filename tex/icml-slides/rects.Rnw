@@ -5,7 +5,8 @@
       \begin{itemize}
       \item Let $X\in\RR^{3\times 2}$.
       \item Approximate $X$ using $\alpha$: $ \min_\alpha||\alpha-X||^2_F $
-      \item Constrain the total area of boxes between every pair of points:
+      \item Constrain the total \alert<1>{area} of boxes between every
+        pair of points:
         $$\sum_{i<j}||\alpha_i-\alpha_j||_q\alert<1>{w_{ij}} \leq t$$
         (grey \alert<1>{rectangles})
       \end{itemize}
