@@ -81,9 +81,9 @@ cvxmod.cluster <- structure(function
     stop("need to install cvxmod from http://cvxmod.net/install.html")
   }
   if(is.null(lambda)){
-    if(is.null(s)){
-      param.vals <- seq(0,1,l=regularization.points)
-    }
+    param.vals <- if(is.null(s)){
+      seq(0,1,l=regularization.points)
+    }else s
     param <- "s"
   }else{
     if(is.null(s)){
@@ -132,7 +132,8 @@ cvxmod.cluster <- structure(function
   isdf <- sapply(dfs,is.data.frame)
   if(any(!isdf))warning(dfs[!isdf])
   results <- do.call(rbind,dfs[isdf])
-  structure(results,data=pts,class=c("cvxmod","clusterpath","data.frame"))
+  structure(results,data=pts,class=c("cvxmod","clusterpath","data.frame"),
+            w=W,weight.pts=weight.pts,alphacolnames=NAMES)
 ### data frame of solutions from the cvxmod solver for each lambda/s
 ### value requested, except those for which the python program failed
 ### with an error.
