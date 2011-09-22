@@ -1,0 +1,136 @@
+\documentclass[]{posterDIGITEO}
+\usepackage[utf8]{inputenc}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\newcommand{\RR}{\mathbb R}
+
+\columnsep=1in
+
+\numero{6}
+
+\auteurs{Toby Dylan Hocking, Armand Joulin, Francis Bach, and Jean-Philippe Vert}
+\titre{Clusterpath: an algorithm for clustering using convex fusion penalties}
+\mel{Contact~: Toby.Hocking@inria.fr}
+\barrebas{\includegraphics{inria-logo}}
+
+\begin{document}
+\begin{multicols}{2}
+
+\section{The clustering problem}
+\begin{minipage}{0.45\columnwidth}
+\raggedright
+  Clustering: label $n$ points in $p$~dimensions
+    $X\in\RR^{n\times p}$.
+\begin{itemize}
+\item  $X_i\in\RR^p$ row/datum $i$ of $X$.
+\item $\alpha_i\in\RR^p$ clustered $X_i$.
+\item $\alpha^j\in\RR^n$ column/variable $j$.
+\end{itemize}
+\end{minipage}
+\begin{small}
+\begin{minipage}{0.3\columnwidth}
+  Methods:
+    \begin{itemize}
+  \item K-means
+  \item Hierarchical
+  \item Mixture models
+  \item Spectral (Ng \emph{et al.} 2001)
+    \end{itemize}
+\end{minipage}
+\begin{minipage}{0.25\columnwidth}
+    Issues:
+    \begin{itemize}
+    \item Hierarchy
+    \item Convexity
+    \item Greediness
+    \item Stability
+    \item Interpretability 
+  \end{itemize}
+\end{minipage}
+\end{small}
+
+\section{Clusterpath: relaxing a fusion penalty}
+\begin{itemize}
+\item Hard-thresholding of differences is a combinatorial problem:
+$
+ \min_{    \alpha\in\RR^{n\times p}}       ||\alpha-X||_F^2 \text{  subject to  }
+\sum_{i<j}1_{\alpha_i\neq\alpha_j} \leq t$
+\item Relaxation: $\Omega(\alpha)=\sum_{i<j}||\alpha_i-\alpha_j||_q
+  w_{ij}\leq t$, \ {\small $w_{ij} = \exp(-\gamma||X_i-X_j||^2_2)$}
+  
+\input{geometry} 
+
+ 
+\item The Lagrange form is useful for optimization algorithms:
+$$
+\alpha^*(X,\lambda,q,w)=\operatorname{argmin}_{\alpha\in\RR^{n\times p}}
+\frac 1 2||\alpha-X||_F^2+\lambda\sum_{i<j}||\alpha_i-\alpha_j||_q w_{ij}
+$$ 
+\item The \textbf{clusterpath} of $X$ is the path of optimal
+  $\alpha^*$ obtained by varying $\lambda$, for fixed weights
+  $w_{ij}>0$ and norm $q\in\{1,2,\infty\}$.
+
+\input{cvx-allnorms}
+\input{l1-dims}
+ {\small 
+Related work: ``Fused lasso'' Tibshirani and Saunders (2005),
+``grouping pursuit'' Shen and Huang (2010), ``sum of norms'' Lindsten
+\emph{et al.}  (2011).
+}
+\end{itemize} 
+
+\section{Outline of the $\ell_1$ path algorithm}
+Consider one variable: $\alpha,X\in\RR^n$. Condition sufficient for optimality:
+$$0 = \alpha_{i} - X_{i} + 
+\lambda \sum_{j\neq i\atop \alpha_i \neq \alpha_j}w_{ij}
+\operatorname{sign}({\alpha_i-\alpha_j}) + 
+\lambda \sum_{j\neq i \atop \alpha_i = \alpha_j}w_{ij} \beta_{ij},$$
+with $|\beta_{ij}|\leq 1$ and $\beta_{ij}=-\beta_{ji}$ (Hoefling 2009).
+\begin{enumerate}
+\item For $\lambda=0$ the solution $\alpha=X$ is optimal. Initialize
+  clusters $C_i = \{i\}$. 
+\item As $\lambda$ increases, the solutions will follow straight
+  lines:
+$$\frac {d\alpha_C}{d\lambda}=v_C = 
+\sum_{j\not\in C}w_{jC}\operatorname{sign}(\alpha_j-\alpha_C)=
+\sum_{j\not\in C}\sum_{i\in C} w_{ij}\operatorname{sign}(\alpha_j-\alpha_C)$$
+\item When 2 clusters $C_1$ and $C_2$ fuse, they form a
+  new cluster $C = C_1\cup C_2$ with $v_C = (
+|C_1|v_1 + |C_2|v_2
+)/(
+|C_1|+|C_2|
+)$.
+\item Stop when all the points merge at the mean $\overline X$.
+\end{enumerate}
+
+\section{Performs similarly to spectral clustering}
+\includegraphics[width=\columnwidth]{moons}
+%\includegraphics[width=\columnwidth]{iris-clusterpath}
+
+
+\section{Free software implementation}
+\begin{itemize}
+\item \url{http://clusterpath.r-forge.r-project.org/}
+\item Dedicated C++ optimization algorithms with R interface.
+  \begin{itemize} 
+  \item Calculates the exact $\ell_1$ clusterpath for identity weights.
+  \item Active-set algorithm for $\ell_{1|2}$ clusterpath with general
+    weights.
+  \end{itemize}
+\item R interface to Python \texttt{cvxmod} clusterpath solver.
+\end{itemize}
+
+\section{Future work}
+  \begin{itemize}
+  \item Necessary and sufficient conditions for cluster splitting?
+  \item Consistence of the clusterpath tree? (Hartigan, 1975)
+  \item Automatically learning weights and number of clusters?
+  \item Applications to solving proximal problems.
+  \end{itemize}
+
+
+
+
+\end{multicols}
+\end{document}
