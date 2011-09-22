@@ -148,22 +148,17 @@ set.seed(19)
 sim <- gendata(N=5,D=2,K=2,SD=0.6)
 plot(sim$mat,asp=1)
 cvx <- data.frame()
-for(norm in c(1,2,"inf"))for(gamma in c(0,1)){
-  cvx <- rbind(cvx,cvxmod.cluster(sim$mat,norm=norm,gamma=gamma,
-                                  regularization.points=50))
-}
+## for(norm in c(1,2,"inf"))for(gamma in c(0,1)){
+##   cvx <- rbind(cvx,cvxmod.cluster(sim$mat,norm=norm,gamma=gamma,
+##                                   regularization.points=50))
+## }
+load(url("http://cbio.ensmp.fr/~thocking/clusterpath-figure-2.RData"))
 means <- data.frame(alpha=t(colMeans(sim$mat)))
-p <- ggplot(cvx,aes(alpha.2,alpha.1))+
-  geom_text(data=means,label="$\\overline X$",col="grey")+
+p <- ggplot(cvx,aes(alpha.1,alpha.2))+
+  ##geom_text(data=means,label="$\\overline X$",col="grey")+
   ##geom_point(aes(size=s),alpha=1/4)+
-  geom_path(aes(group=row),colour="black",lwd=1)+
-  facet_grid(gamma~norm,labeller=function(var,val){
-    val <- as.character(val)
-    if(var=="gamma")var <- "\\gamma"
-    else var <- sprintf("\\textrm{%s}",var)
-    val[val=="inf"] <- "\\infty"
-    sprintf("$%s=%s$",var,val)
-  })+
+  geom_path(aes(colour=gamma,linetype=gamma,group=interaction(row,gamma)),lwd=1)+
+  facet_grid_label(~norm)+
   coord_equal()+
   scale_size("$s$")+
   geom_point(data=data.frame(alpha=sim$mat),pch=21,fill="white")+
