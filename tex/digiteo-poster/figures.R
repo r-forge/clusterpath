@@ -2,6 +2,33 @@ library(tikzDevice)
 options( tikzDocumentDeclaration="\\documentclass[24pt]{beamer}")
 library(clusterpath)
 library(ggplot2)
+if(require(RColorBrewer)){
+  require(grDevices)
+  custom.pal <- brewer.pal(9,"Set1")
+  custom.pal[6] <- "#DDDD33"
+  trellis.par.set(theme=simpleTheme(col=custom.pal))
+  ##show.settings()
+}
+
+centers <- expand.grid(x=c(1,6),y=c(0,5,10))
+centers$cluster <- 1:nrow(centers)
+N <- 100
+set.seed(9)
+library(plyr)
+pts <- ddply(centers,.(cluster),with,data.frame(
+      x=rnorm(N*length(x),x),
+      y=rnorm(N*length(y),y),
+      cluster=cluster))
+pts$kmeans <- kmeans(as.matrix(pts[,1:2]),nrow(centers))$cluster
+library(lattice)
+p <- xyplot(x~y,pts,groups=kmeans,aspect="iso",main="k-means clustering, k=6",
+            xlab="",ylab="",scales=list())
+#tikz("kmeans.tex",height=5,width=8)
+pdf("kmeans.pdf",height=5,width=8)
+print(p)
+dev.off()
+
+
 
 ### Figure 2. 10 points to demonstrate different path geometries
 set.seed(19)

@@ -18,6 +18,7 @@
 \begin{multicols}{2}
 
 \section{The clustering problem}
+\vspace{-0.5in}
 \begin{minipage}{0.45\columnwidth}
 \raggedright
   Clustering: label $n$ points in $p$~dimensions
@@ -28,28 +29,11 @@
 \item $\alpha^j\in\RR^n$ column/variable $j$.
 \end{itemize}
 \end{minipage}
-\begin{small}
-\begin{minipage}{0.3\columnwidth}
-  Methods:
-    \begin{itemize}
-  \item K-means
-  \item Hierarchical
-  \item Mixture models
-  \item Spectral (Ng \emph{et al.} 2001)
-    \end{itemize}
-\end{minipage}
-\begin{minipage}{0.25\columnwidth}
-    Issues:
-    \begin{itemize}
-    \item Hierarchy
-    \item Convexity
-    \item Greediness
-    \item Stability
-    \item Interpretability 
-  \end{itemize}
-\end{minipage}
-\end{small}
-
+\begin{minipage}{0.5\columnwidth}
+%\input{kmeans} 
+\includegraphics[width=\textwidth]{kmeans}
+\end{minipage} 
+\vspace{-1in}
 \section{Clusterpath: relaxing a fusion penalty}
 \begin{itemize}
 \item Hard-thresholding of differences is a combinatorial problem:
@@ -61,7 +45,7 @@ $
   
 \input{geometry} 
 
- 
+ \vspace{-0.5in}
 \item The Lagrange form is useful for optimization algorithms:
 $$
 \alpha^*(X,\lambda,q,w)=\operatorname{argmin}_{\alpha\in\RR^{n\times p}}
@@ -74,9 +58,11 @@ $$
 \input{cvx-allnorms}
 \input{l1-dims}
  {\small 
-Related work: ``Fused lasso'' Tibshirani and Saunders (2005),
-``grouping pursuit'' Shen and Huang (2010), ``sum of norms'' Lindsten
-\emph{et al.}  (2011).
+Related work:
+``Fused lasso'' Tibshirani and Saunders (2005), 
+``convex clustering shrinkage'' Pelckmans \emph{et al.} (2005),
+``grouping pursuit'' Shen and Huang (2010),
+``sum of norms'' Lindsten \emph{et al.}  (2011).
 }
 \end{itemize} 
 
