@@ -13,4 +13,4 @@ sim.two.moons <- function(seed,N=150,noise=0.5){
 alldata <- do.call(rbind,lapply(1:20,sim.two.moons))
 library(lattice)
 xyplot(y~x|seed,alldata,groups=class,aspect="iso")
-write.csv(alldata,"moons-sim-clusterpath.csv",row.names=FALSE)
+write.csv(alldata,"moons-sim-clusterpath.csv",row.names=FALSE,quote=FALSE)
