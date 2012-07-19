@@ -38,11 +38,15 @@ conference paper:
 
 <h2>Examples</h2>
 
-<p>To use the code, first install and load the package in R:</p>
+<p>To use the code, first install and load the package in R. It seems
+like R-Forge is no longer hosting the clusterpath source package, so
+please download it using a Subversion client and then install
+manually:</p>
 
 <pre>
-install.packages("Rcpp")
-install.packages("clusterpath", repos="http://R-Forge.R-project.org")
+install.packages(c("inline","Rcpp"))
+system("svn checkout svn://scm.r-forge.r-project.org/svnroot/clusterpath/pkg clusterpath")
+system("R CMD INSTALL clusterpath")
 library(clusterpath)
 </pre>
 
