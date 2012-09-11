@@ -436,6 +436,8 @@ $\infty$ & piecewise linear&Frank-Wolfe&unknown*&medium $\approx 10^3$\\
   \item Open question: hierarchical clusterpath for which other weights
     and norms?
   \item Learning the weights and number of clusters automatically?
+  \item Consistency of the clusterpath tree with respect to the
+    density of the data?
   \end{itemize}
   \only<2>{Thank you, any questions? \\You can contact me directly at
     toby.hocking@inria.fr.}
