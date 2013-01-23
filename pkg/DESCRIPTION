@@ -10,7 +10,7 @@ Description: Implements the clusterpath, a clustering method in which all
  penalties. This package is a wrapper around the C++ implementation.
 License: GPL-3
 LazyLoad: yes
-Depends: R (>= 2.14.0), Rcpp (>= 0.8.0), lattice, ggplot2, plyr, reshape2, 
+Depends: Rcpp (>= 0.8.0), lattice, ggplot2, plyr, reshape2, 
 	 latticeExtra, Matrix, grid
 Suggests: rgl, directlabels, mclust, multicore
 LinkingTo: Rcpp

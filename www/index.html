@@ -38,16 +38,19 @@ conference paper:
 
 <h2>Examples</h2>
 
-<p>To use the code, first install and load the package in R. It seems
-like R-Forge is no longer hosting the clusterpath source package, so
-please download it using a Subversion client and then install
-manually:</p>
+<p>To use the code, first install and load the package and its
+dependencies in R.</p>
+<pre>
+install.packages(c("Rcpp","ggplot2","latticeExtra"))
+install.packages("clusterpath",repos="http://r-forge.r-project.org")
+</pre>
+
+
+<p>You can also install clusterpath from source if you have Subversion:</p>
 
 <pre>
-install.packages(c("inline","Rcpp"))
 system("svn checkout svn://scm.r-forge.r-project.org/svnroot/clusterpath/pkg clusterpath")
 system("R CMD INSTALL clusterpath")
-library(clusterpath)
 </pre>
 
 <table>
@@ -55,6 +58,7 @@ library(clusterpath)
 <tr>
 <td>
 <pre>
+library(clusterpath)
 ## calculate the l1 clusterpath
 breakpoints &lt;- clusterpath.l1.id(iris[,1:4])
 plot(breakpoints)
