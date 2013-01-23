@@ -61,6 +61,7 @@ plotting and comparing with other norms, weights and solvers.}
 library(clusterpath)
 x <- cbind(c(1.1,1.2,4,2),
            c(2.2,2.5,3,0))
+pts <- data.frame(alpha=x,i=1:nrow(x))
 Wmat <- matrix(0,4,4)
 Wmat[2,1] <- Wmat[1,2] <- 9
 Wmat[3,1] <- Wmat[1,3] <- 20
@@ -71,26 +72,27 @@ Wmat[4,3] <- Wmat[3,4] <- 1
 w <- as.dist(Wmat)
 res <- clusterpath.l2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1)
 lvals <- unique(res$lambda)
-cvx <- cvxcheck(res,lambda=seq(0,max(lvals),l=8))
-library(plyr)
-cvx2 <- ddply(cvx,.(lambda),function(d){
-  d$k <- factor(nrow(unique(round(d[,1:2],1))))
-  d
-})
-res2 <- ddply(res,.(lambda,solver),function(d){
-  d$k <- factor(nrow(unique(d[,1:2])))
-  d
-})
-pts <- data.frame(alpha=x,i=1:nrow(x))
-toplot <- rbind(res2,cvx2)
-ggplot(,aes(alpha.1,alpha.2))+
-  geom_path(aes(group=row),data=subset(toplot,solver=="descent.split"),
-            colour="grey")+
-  geom_point(aes(size=lambda,colour=k,shape=solver),data=toplot)+
-  scale_shape_manual(values=c(21,20))+
-  geom_text(aes(label=i),data=pts)+
-  ggtitle("Descent with split checks agrees with cvxmod")+
-  coord_equal()
+if(cvxmod.available()){
+  cvx <- cvxcheck(res,lambda=seq(0,max(lvals),l=8))
+  library(plyr)
+  cvx2 <- ddply(cvx,.(lambda),function(d){
+    d$k <- factor(nrow(unique(round(d[,1:2],1))))
+    d
+  })
+  res2 <- ddply(res,.(lambda,solver),function(d){
+    d$k <- factor(nrow(unique(d[,1:2])))
+    d
+  })
+  toplot <- rbind(res2,cvx2)
+  ggplot(,aes(alpha.1,alpha.2))+
+    geom_path(aes(group=row),data=subset(toplot,solver=="descent.split"),
+              colour="grey")+
+    geom_point(aes(size=lambda,colour=k,shape=solver),data=toplot)+
+    scale_shape_manual(values=c(21,20))+
+    geom_text(aes(label=i),data=pts)+
+    ggtitle("Descent with split checks agrees with cvxmod")+
+    coord_equal()
+}
 ## descent algo splitting ex, with matrix and times
 with.timelabels <- function(...){
   ms <- c()
@@ -114,16 +116,21 @@ with.timelabels <- function(...){
 nosplit.res <- with.timelabels(check.splits=0)
 split.res <- with.timelabels(check.splits=1)
 lvals <- split.res$lambda
-cvx <- cvxcheck(split.res,lambda=seq(min(lvals),max(lvals),l=6))
 p <- ggplot(rbind(split.res,nosplit.res),aes(alpha.1,alpha.2,colour=row))+
   geom_path(aes(group=interaction(row,solver),linetype=solver),
             lwd=1.5)+
   ggtitle(paste("Descent solver (lines) needs to permit splitting",
-         "to reach the cvxmod solutions (circles) for general weights"))+
-  geom_point(aes(size=lambda),data=cvx,pch=1)+
+         "to reach the optimal solutions for general weights"))+
   scale_colour_identity()+
   geom_text(aes(label=i,colour=i),data=pts)+
   coord_equal()
+if(cvxmod.available()){
+  cvx <- cvxcheck(split.res,lambda=seq(min(lvals),max(lvals),l=6))
+  p <- p+
+    geom_point(aes(size=lambda),data=cvx,pch=1)+
+    ggtitle(paste("Descent solver (lines) needs to permit splitting",
+         "to reach the cvxmod solutions (circles) for general weights"))
+}
 print(p)
 ## compare decreasing step size with mixed decreasing/linesearch
 LAPPLY <- if(require(multicore))mclapply else lapply

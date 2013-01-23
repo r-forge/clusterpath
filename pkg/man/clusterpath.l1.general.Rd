@@ -45,15 +45,15 @@ if(require(latticeExtra)){
 library(ggplot2)
 ## compare with cvx
 if(cvxmod.available()){
-gamma <- 0.1
-descent.weights <- clusterpath.l1.general(sim$mat,gamma=gamma,lambda=0.001)
-lvals <- c(seq(min(descent.weights$lambda),0.02,l=4),
-           seq(0.02,max(descent.weights$lambda),l=4))
-cvx <- cvxmod.cluster(sim$mat,lvals,norm=1,gamma=gamma)
-both <- rbind(descent.weights,cvx)
-molt <- melt(both,measure=c("alpha.1","alpha.2"))
-ggplot(molt,aes(log(lambda+1),value,colour=solver))+
-  geom_point(aes(shape=solver))+
-  facet_grid(variable~.,scales="free")
+  gamma <- 0.1
+  descent.weights <- clusterpath.l1.general(sim$mat,gamma=gamma,lambda=0.001)
+  lvals <- c(seq(min(descent.weights$lambda),0.02,l=4),
+             seq(0.02,max(descent.weights$lambda),l=4))
+  cvx <- cvxmod.cluster(sim$mat,lvals,norm=1,gamma=gamma)
+  both <- rbind(descent.weights,cvx)
+  molt <- melt(both,measure=c("alpha.1","alpha.2"))
+  ggplot(molt,aes(log(lambda+1),value,colour=solver))+
+    geom_point(aes(shape=solver))+
+    facet_grid(variable~.,scales="free")
 }
 }

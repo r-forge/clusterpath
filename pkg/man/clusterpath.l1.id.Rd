@@ -28,11 +28,13 @@ head(df)
 mean(x)
 plot(df)
 ## check agreement with cvx
-cres <- cvxcheck(df,seq(0,max(df$lambda),l=8),verbose=TRUE)
-orig <- data.frame(alpha=x,row=1:length(x),lambda=0)
-p <- ggplot(df,aes(lambda,alpha))+
-  geom_line(aes(group=row))+
-  geom_point(aes(y=alpha.1),data=cres,pch=21)+
-  scale_y_continuous(breaks=x,minor=min(x):max(x))
-print(p)
+if(cvxmod.available()){
+  cres <- cvxcheck(df,seq(0,max(df$lambda),l=8),verbose=TRUE)
+  orig <- data.frame(alpha=x,row=1:length(x),lambda=0)
+  p <- ggplot(df,aes(lambda,alpha))+
+    geom_line(aes(group=row))+
+    geom_point(aes(y=alpha.1),data=cres,pch=21)+
+    scale_y_continuous(breaks=x,minor=min(x):max(x))
+  print(p)
+}
 }

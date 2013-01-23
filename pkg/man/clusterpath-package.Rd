@@ -9,7 +9,7 @@ penalties. This package is a wrapper around the C++ implementation.}
 \tabular{ll}{Package: \tab clusterpath\cr
 Type: \tab Package\cr
 Title: \tab Fast agglomerative clustering using convex fusion penalties\cr
-Version: \tab 1.0\cr
+Version: \tab 1.1\cr
 Date: \tab 2011-05-10\cr
 Author: \tab Toby Dylan Hocking\cr
 Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr
