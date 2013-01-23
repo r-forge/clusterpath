@@ -2,9 +2,7 @@
 \alias{cluster3d}
 \title{cluster3d}
 \description{Cluster a matrix of 3d points using the l1 and l2 algorithms.}
-\usage{
-cluster3d(x, gamma = 0)
-}
+\usage{cluster3d(x, gamma = 0)}
 \arguments{
   \item{x}{A numeric matrix of 3d data.}
   \item{gamma}{gamma value for the weights in the l2 clustering}
@@ -12,7 +10,7 @@ cluster3d(x, gamma = 0)
 
 \value{An invisble list of the results of the clustering algorithms.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

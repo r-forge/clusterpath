@@ -6,16 +6,14 @@ the breakpoints in the clusterpath data frame are not sufficient
 to visualize the correct path of solutions in 2d. You need
 additional breakpoints, which are calculated by castbreakpoints
 before plotting using ggplot2.}
-\usage{
-plot2d(x)
-}
+\usage{plot2d(x)}
 \arguments{
   \item{x}{clusterpath data frame as returned by clusterpath.l1.id.}
 }
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

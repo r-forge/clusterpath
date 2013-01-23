@@ -5,9 +5,7 @@
 clusters. weights are calculated for a range of gamma
 values. Kmeans is fit to the top 2 eigenvectors in each case, and
 we pick the eigenvectors the best reconstruction error}
-\usage{
-get.best.eigenvectors(S, K, evec.transform)
-}
+\usage{get.best.eigenvectors(S, K, evec.transform)}
 \arguments{
   \item{S}{
 }
@@ -19,7 +17,7 @@ get.best.eigenvectors(S, K, evec.transform)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

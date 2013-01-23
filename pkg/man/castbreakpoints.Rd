@@ -5,9 +5,7 @@
 of a new data frame, to facilitate plotting in [23]d. In practice
 this is quite a bit faster than brute-force plotting all points
 returned by predict.clusterpath.}
-\usage{
-castbreakpoints(df)
-}
+\usage{castbreakpoints(df)}
 \arguments{
   \item{df}{clusterpath data frame.}
 }
@@ -17,7 +15,7 @@ of the problem, suitable for plotting with lines in the high
 dimension to represent the entire linear path of optimal solutions
 for the l1 problem.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -4,9 +4,7 @@
 \description{measure of correspondence between partitions (Hubert and Arabie
 1985) 1=perfect, 0=completely random, or just the same label for
 everybody.}
-\usage{
-norm.rand.index(klass, guess)
-}
+\usage{norm.rand.index(klass, guess)}
 \arguments{
   \item{klass}{
 }
@@ -16,7 +14,7 @@ norm.rand.index(klass, guess)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

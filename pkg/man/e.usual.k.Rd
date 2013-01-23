@@ -2,9 +2,7 @@
 \alias{e.usual.k}
 \title{e usual k}
 \description{give an eigenvector scaling function for a specific k}
-\usage{
-e.usual.k(K)
-}
+\usage{e.usual.k(K)}
 \arguments{
   \item{K}{
 }
@@ -12,7 +10,7 @@ e.usual.k(K)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -3,9 +3,7 @@
 \title{alphacolnames}
 \description{Get the names of the columns as they will be shown in the
 clustering results data frames.}
-\usage{
-alphacolnames(x)
-}
+\usage{alphacolnames(x)}
 \arguments{
   \item{x}{
 }
@@ -13,7 +11,7 @@ alphacolnames(x)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

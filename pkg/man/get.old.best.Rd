@@ -3,9 +3,7 @@
 \title{get old best}
 \description{try a bunch of gamma values in spectral clustering and get the one
 that gives the best reconstruction error.}
-\usage{
-get.old.best(m, k, evec.transform)
-}
+\usage{get.old.best(m, k, evec.transform)}
 \arguments{
   \item{m}{
 }
@@ -17,7 +15,7 @@ get.old.best(m, k, evec.transform)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

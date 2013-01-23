@@ -3,9 +3,7 @@
 \title{e exponential auto}
 \description{adaptive eigenvector scaling function that takes the biggest
 bandwidth that gives you more than 1 nonzero vector.}
-\usage{
-e.exponential.auto(eigenvalues)
-}
+\usage{e.exponential.auto(eigenvalues)}
 \arguments{
   \item{eigenvalues}{
 }
@@ -13,7 +11,7 @@ e.exponential.auto(eigenvalues)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -147,12 +147,14 @@ clusterpath.l2.general <- structure(function
     d
   })
   pts <- data.frame(alpha=x,i=1:nrow(x))
-  ggplot(rbind(res2,cvx2),aes(alpha.1,alpha.2))+
-    geom_path(aes(group=row),subset=.(solver=="descent.check"),colour="grey")+
-    geom_point(aes(size=lambda,colour=k,shape=solver))+
+  toplot <- rbind(res2,cvx2)
+  ggplot(,aes(alpha.1,alpha.2))+
+    geom_path(aes(group=row),data=subset(toplot,solver=="descent.split"),
+              colour="grey")+
+    geom_point(aes(size=lambda,colour=k,shape=solver),data=toplot)+
     scale_shape_manual(values=c(21,20))+
     geom_text(aes(label=i),data=pts)+
-    opts(title="Descent with split checks agrees with cvxmod")+
+    ggtitle("Descent with split checks agrees with cvxmod")+
     coord_equal()
   ## descent algo splitting ex, with matrix and times
   with.timelabels <- function(...){
@@ -180,8 +182,8 @@ clusterpath.l2.general <- structure(function
   cvx <- cvxcheck(split.res,lambda=seq(min(lvals),max(lvals),l=6))
   p <- ggplot(rbind(split.res,nosplit.res),aes(alpha.1,alpha.2,colour=row))+
     geom_path(aes(group=interaction(row,solver),linetype=solver),
-              alpha=1/2,lwd=1.5)+
-    opts(title=paste("Descent solver (lines) needs to permit splitting",
+              lwd=1.5)+
+    ggtitle(paste("Descent solver (lines) needs to permit splitting",
            "to reach the cvxmod solutions (circles) for general weights"))+
     geom_point(aes(size=lambda),data=cvx,pch=1)+
     scale_colour_identity()+
@@ -270,6 +272,7 @@ clusterpath.l1.general <- structure(function
   }
   library(ggplot2)
   ## compare with cvx
+  if(cvxmod.available()){
   gamma <- 0.1
   descent.weights <- clusterpath.l1.general(sim$mat,gamma=gamma,lambda=0.001)
   lvals <- c(seq(min(descent.weights$lambda),0.02,l=4),
@@ -280,6 +283,7 @@ clusterpath.l1.general <- structure(function
   ggplot(molt,aes(log(lambda+1),value,colour=solver))+
     geom_point(aes(shape=solver))+
     facet_grid(variable~.,scales="free")
+  }
 })
 
 clusterpath.l1.id <- structure(function

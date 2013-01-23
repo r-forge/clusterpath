@@ -1,49 +1,33 @@
-cvxcheck <- structure(function
-### based on a clustering result, verify using cvxmod
-(df,
-### data frame of l1 or l2 solutions
- lambda=sort(unique(df$lambda)),
-### lambda values on which we will calculate the solutions
- ...
-### passed to cvxmod.cluster
+python.command <- function
+### Return the command to use to run python.
+(path=system.file(package="clusterpath")
+### If NULL then add nothing to the PYTHONPATH, otherwise add the
+### specified path.
  ){
-  x <- attr(df,"data")
-  arglist <- list(x,lambda=lambda,norm=df$norm[1],gamma=df$gamma[1],...)
-  if(!is.null(w <- attr(df,"w",exact=TRUE)))arglist$W <- w
-  if(!is.null(w <- attr(df,"weight.pts",exact=TRUE)))arglist$weight.pts <- w
-  do.call(cvxmod.cluster,arglist)
-},ex=function(){
-  sim <- gendata(N <- 5,2,2,0.1)
-  colnames(sim$mat) <- c("height","length")
-  xyplot(length~height,data.frame(sim$mat,row=1:N),aspect="iso",group=row)
-  df <- clusterpath.l1.id(sim$mat)
-  cvx <- cvxcheck(df)
-  library(reshape)
-  cvx.melt <- melt(cvx,measure.vars=1:2)
-
-  ## plot each dimension separately using lattice
-  library(latticeExtra)
-  (p <- plot(df))
-  update(p,main="the path algorithm (lines) agrees with cvxmod (points)")+
-    xyplot(value~lambda|variable,cvx.melt,groups=row)
-
-  ## plot the 2 dimensions together using ggplot2
-  (p <- plot2d(df))
-  ## compare with cvx manually
-  p+
-    geom_point(aes(size=lambda/max(lambda)),data=cvx,shape=17,colour="red")+
-      opts(title=paste("Optimal solutions from path algorithm (black circles)",
-             "agree with cvxmod (red triangles)"))
-  ## or use a legend
-  p+
-    aes(shape=solver,colour=solver)+
-      geom_point(aes(size=lambda/max(lambda)),data=cvx)
-})
-
-### return TRUE if cvxmod is working on this system
-cvxmod.available <- function(){
-system("python -c 'import cvxmod'",ignore.stderr=TRUE)==0
+  cmd <- "python"
+  if(!is.null(path)){
+    stopifnot(is.character(path))
+    stopifnot(length(path)==1)
+    cmd <- sprintf("PYTHONPATH=%s %s",path,cmd)
+  }
+  cmd
+### A command that should be able to run python with cvxmod on your
+### system. e.g. "PYTHONPATH=/path/to/clusterpath python"
 }
+
+cvxmod.available <- function
+### Test if cvxmod is working on this system.
+(python=python.command()
+### How should python be invoked?
+ ){
+  stopifnot(is.character(python))
+  stopifnot(length(python)==1)
+  cmd <- sprintf("%s -c 'import cvxmod'",python)
+  
+  system(cmd,ignore.stderr=TRUE)==0
+### TRUE if cvxmod is available, FALSE otherwise.
+}
+
 
 cvxmod.cluster <- structure(function
 ### Perform relaxed convex clustering using cxvmod. This will probably
@@ -78,7 +62,7 @@ cvxmod.cluster <- structure(function
  regularization.points=8
  ){
   if(!cvxmod.available()){
-    stop("need to install cvxmod from http://cvxmod.net/install.html")
+    stop("cvxmod not available, try installing cvxopt")
   }
   if(is.null(lambda)){
     param.vals <- if(is.null(s)){
@@ -109,8 +93,10 @@ cvxmod.cluster <- structure(function
   clusterpy <- file.path(execdir,"cluster.py")
   cluster <- function(param.val){
     outf <- paste(datafile,param.val,sep=".")
-    cmd <- sprintf("python %s %s %s=%f %s %s",
-                   shQuote(clusterpy),shQuote(datafile),
+    cmd <- sprintf("%s %s %s %s=%f %s %s",
+                   python.command(),
+                   shQuote(clusterpy),
+                   shQuote(datafile),
                    param,as.numeric(as.character(param.val)),
                    as.character(norm),
                    shQuote(outf))
@@ -148,7 +134,7 @@ cvxmod.cluster <- structure(function
   ggplot(cvx,aes(alpha.1,alpha.2))+
     geom_path(aes(group=row),colour="grey")+
     geom_point(aes(size=s),alpha=1/2)+
-    opts(main="cvxmod solutions for the l2 problem using decreasing weights")+
+    ggtitle("cvxmod solutions for the l2 problem using decreasing weights")+
     coord_equal()
 
   cvx <- data.frame()
@@ -156,13 +142,15 @@ cvxmod.cluster <- structure(function
     cvx <- rbind(cvx,cvxmod.cluster(sim$mat,norm=norm,gamma=gamma))
   }
   means <- data.frame(t(colMeans(sim$mat)))
+  require(grid)
   p <- ggplot(cvx,aes(alpha.2,alpha.1))+
-    geom_point(aes(size=s),alpha=1/2)+
+    geom_point(aes(size=s),colour="grey")+
     facet_grid(norm~gamma,labeller=function(var,val)
                sprintf("%s : %s",var,val))+
     coord_equal()+
-    opts(title="Fused lasso clustering for several norms and weights")+
-    geom_point(aes(X2,X1),data=data.frame(sim$mat),pch=21,fill="white")
+    ggtitle("Fused lasso clustering for several norms and weights")+
+    geom_point(aes(X2,X1),data=data.frame(sim$mat),pch=21,fill="white")+
+    theme(panel.margin=unit(0,"cm"))
   print(p)
   ## otherwise, this is useful for comparing using lambda values
   set.seed(1)
@@ -173,5 +161,47 @@ cvxmod.cluster <- structure(function
   library(latticeExtra)
   plot(path)+xyplot(alpha.1~lambda,cvx2,group=row)
 }
+})
+
+cvxcheck <- structure(function
+### based on a clustering result, verify using cvxmod
+(df,
+### data frame of l1 or l2 solutions
+ lambda=sort(unique(df$lambda)),
+### lambda values on which we will calculate the solutions
+ ...
+### passed to cvxmod.cluster
+ ){
+  x <- attr(df,"data")
+  arglist <- list(x,lambda=lambda,norm=df$norm[1],gamma=df$gamma[1],...)
+  if(!is.null(w <- attr(df,"w",exact=TRUE)))arglist$W <- w
+  if(!is.null(w <- attr(df,"weight.pts",exact=TRUE)))arglist$weight.pts <- w
+  do.call(cvxmod.cluster,arglist)
+},ex=function(){
+  sim <- gendata(N <- 5,2,2,0.1)
+  colnames(sim$mat) <- c("height","length")
+  xyplot(length~height,data.frame(sim$mat,row=1:N),aspect="iso",group=row)
+  df <- clusterpath.l1.id(sim$mat)
+  cvx <- cvxcheck(df)
+  library(reshape2)
+  cvx.melt <- melt(cvx,measure.vars=1:2)
+
+  ## plot each dimension separately using lattice
+  library(latticeExtra)
+  (p <- plot(df))
+  update(p,main="the path algorithm (lines) agrees with cvxmod (points)")+
+    xyplot(value~lambda|variable,cvx.melt,groups=row)
+
+  ## plot the 2 dimensions together using ggplot2
+  (p <- plot2d(df))
+  ## compare with cvx manually
+  p+
+    geom_point(aes(size=lambda/max(lambda)),data=cvx,shape=17,colour="red")+
+    ggtitle(paste("Optimal solutions from path algorithm (black circles)",
+                  "agree with cvxmod (red triangles)"))
+  ## or use a legend
+  p+
+    aes(shape=solver,colour=solver)+
+    geom_point(aes(size=lambda/max(lambda)),data=cvx)
 })
 

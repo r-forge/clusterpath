@@ -3,9 +3,7 @@
 \title{cluster points}
 \description{Call this function with a matrix m and number of clusters k to run
 several clustering algorithms on the matrix.}
-\usage{
-cluster.points(m, k, ...)
-}
+\usage{cluster.points(m, k, ...)}
 \arguments{
   \item{m}{
 }
@@ -17,7 +15,7 @@ cluster.points(m, k, ...)
 
 \value{A data frame with timings and guesses}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

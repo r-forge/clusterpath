@@ -3,9 +3,10 @@
 \title{clusterpath l2 general}
 \description{Cluster a matrix of data using the L2 penalty and weights that
 potentially depend on another matrix.}
-\usage{
-clusterpath.l2.general(x, w = x, gamma = 1, lambda = 0.01, join.thresh = NULL, opt.thresh = 0.001, lambda.factor = 1.05, smooth = 0, maxit = 1000, linesearch.freq = 2, linesearch.points = 10, check.splits = 1, target.cluster = 0, verbose = 0, ...)
-}
+\usage{clusterpath.l2.general(x, w = x, gamma = 1, lambda = 0.01, join.thresh = NULL, 
+    opt.thresh = 0.001, lambda.factor = 1.05, smooth = 0, maxit = 1000, 
+    linesearch.freq = 2, linesearch.points = 10, check.splits = 1, 
+    target.cluster = 0, verbose = 0, ...)}
 \arguments{
   \item{x}{\eqn{n\times p} matrix of data to cluster}
   \item{w}{\eqn{w_{ij}} weight matrix to use for the coefficients of the
@@ -51,7 +52,7 @@ for k=1,...,p with names taken from the original matrix, if there
 were any. Then rows lambda, row, gamma, norm, solver which permit
 plotting and comparing with other norms, weights and solvers.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 
@@ -81,12 +82,14 @@ res2 <- ddply(res,.(lambda,solver),function(d){
   d
 })
 pts <- data.frame(alpha=x,i=1:nrow(x))
-ggplot(rbind(res2,cvx2),aes(alpha.1,alpha.2))+
-  geom_path(aes(group=row),subset=.(solver=="descent.check"),colour="grey")+
-  geom_point(aes(size=lambda,colour=k,shape=solver))+
+toplot <- rbind(res2,cvx2)
+ggplot(,aes(alpha.1,alpha.2))+
+  geom_path(aes(group=row),data=subset(toplot,solver=="descent.split"),
+            colour="grey")+
+  geom_point(aes(size=lambda,colour=k,shape=solver),data=toplot)+
   scale_shape_manual(values=c(21,20))+
   geom_text(aes(label=i),data=pts)+
-  opts(title="Descent with split checks agrees with cvxmod")+
+  ggtitle("Descent with split checks agrees with cvxmod")+
   coord_equal()
 ## descent algo splitting ex, with matrix and times
 with.timelabels <- function(...){
@@ -114,8 +117,8 @@ lvals <- split.res$lambda
 cvx <- cvxcheck(split.res,lambda=seq(min(lvals),max(lvals),l=6))
 p <- ggplot(rbind(split.res,nosplit.res),aes(alpha.1,alpha.2,colour=row))+
   geom_path(aes(group=interaction(row,solver),linetype=solver),
-            alpha=1/2,lwd=1.5)+
-  opts(title=paste("Descent solver (lines) needs to permit splitting",
+            lwd=1.5)+
+  ggtitle(paste("Descent solver (lines) needs to permit splitting",
          "to reach the cvxmod solutions (circles) for general weights"))+
   geom_point(aes(size=lambda),data=cvx,pch=1)+
   scale_colour_identity()+

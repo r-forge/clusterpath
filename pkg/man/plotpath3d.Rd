@@ -2,9 +2,7 @@
 \alias{plotpath3d}
 \title{plotpath3d}
 \description{plot the path in rgl 3d as lines. uses only first 3 variables by default}
-\usage{
-plotpath3d(path, vars = 1:3, ...)
-}
+\usage{plotpath3d(path, vars = 1:3, ...)}
 \arguments{
   \item{path}{
 }
@@ -16,7 +14,7 @@ plotpath3d(path, vars = 1:3, ...)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

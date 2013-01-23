@@ -4,18 +4,19 @@
 \description{Cluster a matrix using the identity weights on each dimension. The
 L1 problem is separable, so we can process each dimension
 separately on each core if the multicore package is available.}
-\usage{
-clusterpath.l1.id(x)
-}
+\usage{clusterpath.l1.id(x, LAPPLY = if (require(multicore)) mclapply else lapply)}
 \arguments{
   \item{x}{Matrix of data.}
+  \item{LAPPLY}{Function to use to combine the results of each dimension. Defaults
+to mclapply for parallel processing if the multicore package is
+available, otherwise the standard lapply.}
 }
 
 \value{data frame of optimal solutions at the breakpoints. need unique()
 when there are multiple lines that join at the exact same time
 (only pathological cases).}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

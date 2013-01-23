@@ -3,9 +3,7 @@
 \title{calcstats}
 \description{calculate some statistics at every point in the path that are
 useful for guessing how many clusters there are.}
-\usage{
-calcstats(path)
-}
+\usage{calcstats(path)}
 \arguments{
   \item{path}{
 }
@@ -13,7 +11,7 @@ calcstats(path)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

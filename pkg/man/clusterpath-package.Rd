@@ -15,12 +15,13 @@ Author: \tab Toby Dylan Hocking\cr
 Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr
 License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr
-Depends: \tab Rcpp (>= 0.8.0), lattice, ggplot2, plyr, reshape, latticeExtra, Matrix\cr
-Suggests: \tab multicore, rgl, animation, directlabels, mclust\cr
+Depends: \tab R (>= 2.14.0), Rcpp (>= 0.8.0), lattice, ggplot2, plyr, reshape2,
+latticeExtra, Matrix, grid\cr
+Suggests: \tab rgl, animation, directlabels, mclust, multicore\cr
 LinkingTo: \tab Rcpp\cr
 SystemRequirements: \tab GNU make\cr}
 }
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 \keyword{ package }
 

@@ -144,7 +144,7 @@ plot2d <- structure(function
     coord_equal()+
     geom_point(aes(size=lambda/max(lambda)),pch=21)+
     scale_size(expression(lambda/lambda[max]))+
-    opts(title="Path of optimal solutions for data in 2d")
+    ggtitle("Path of optimal solutions for data in 2d")
 },ex=function(){
   sim <- gendata(N=5,D=2,K=2)
   df <- clusterpath.l1.id(sim$mat)
@@ -180,10 +180,10 @@ castbreakpoints <- structure(function
 (df
 ### clusterpath data frame.
  ){
-  require(reshape)
+  require(reshape2)
   require(plyr)
   NAMES <- levels(df$col)
-  d <- cast(rename(df,c(alpha="value")),...~col,mean)
+  d <- dcast(rename(df,c(alpha="value")),...~col,mean)
   for(col in NAMES)d <- ddply(d,.(row),fillin,col)
   structure(d[,c(NAMES,names(d)[!names(d)%in%NAMES])],
             data=attr(df,"data"),
@@ -217,13 +217,13 @@ path.animation <- structure(function
 ### Title for the animation.
  ){
   require(animation)
-  require(reshape)
+  require(reshape2)
   dir.create(outdir)
   ## convert relative path to full path (animation package bug)
   outdir <- tools::file_path_as_absolute(outdir)
   lambdas <- sort(unique(df$lambda))
   lmax <- max(lambdas)
-  toomany <- cast(rename(predict(df),c(alpha="value")),...~col)
+  toomany <- dcast(rename(predict(df),c(alpha="value")),...~col)
   bpts <- transform(castbreakpoints(df),lratio=lambda/lmax)
   ani.start(nmax=length(lambdas),
             title=title,

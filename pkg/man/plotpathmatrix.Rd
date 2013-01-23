@@ -2,9 +2,7 @@
 \alias{plotpathmatrix}
 \title{plotpathmatrix}
 \description{plotting method for l2 path for several dimensions.}
-\usage{
-plotpathmatrix(path, ...)
-}
+\usage{plotpathmatrix(path, ...)}
 \arguments{
   \item{path}{
 }
@@ -14,7 +12,7 @@ plotpathmatrix(path, ...)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

@@ -3,9 +3,7 @@
 \title{halfmoon cluster}
 \description{simulate some data in the shape of 2 half-moons and run some
 clustering algorithms on them.}
-\usage{
-halfmoon.cluster(seed, N = 150, noise = 0.5, ...)
-}
+\usage{halfmoon.cluster(seed, N = 150, noise = 0.5, ...)}
 \arguments{
   \item{seed}{
 }
@@ -19,7 +17,7 @@ halfmoon.cluster(seed, N = 150, noise = 0.5, ...)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

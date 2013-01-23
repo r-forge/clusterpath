@@ -3,9 +3,7 @@
 \title{exponential eigenvectors}
 \description{scale the eigenvectors using eigenvalues and the exponential
 function}
-\usage{
-exponential.eigenvectors(nonzero.vectors, nonzero.values, bandwidth = 1)
-}
+\usage{exponential.eigenvectors(nonzero.vectors, nonzero.values, bandwidth = 1)}
 \arguments{
   \item{nonzero.vectors}{
 }
@@ -17,7 +15,7 @@ exponential.eigenvectors(nonzero.vectors, nonzero.values, bandwidth = 1)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

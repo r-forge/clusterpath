@@ -2,9 +2,7 @@
 \alias{plot.l2}
 \title{plot l2}
 \description{plot method for l2 solution path}
-\usage{
-\method{plot}{l2}(x, ...)
-}
+\usage{\method{plot}{l2}(x, ...)}
 \arguments{
   \item{x}{
 }
@@ -14,7 +12,7 @@
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

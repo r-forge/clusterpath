@@ -2,9 +2,7 @@
 \alias{cvxcheck}
 \title{cvxcheck}
 \description{based on a clustering result, verify using cvxmod}
-\usage{
-cvxcheck(df, lambda = sort(unique(df$lambda)), ...)
-}
+\usage{cvxcheck(df, lambda = sort(unique(df$lambda)), ...)}
 \arguments{
   \item{df}{data frame of l1 or l2 solutions}
   \item{lambda}{lambda values on which we will calculate the solutions}
@@ -13,7 +11,7 @@ cvxcheck(df, lambda = sort(unique(df$lambda)), ...)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 
@@ -24,7 +22,7 @@ colnames(sim$mat) <- c("height","length")
 xyplot(length~height,data.frame(sim$mat,row=1:N),aspect="iso",group=row)
 df <- clusterpath.l1.id(sim$mat)
 cvx <- cvxcheck(df)
-library(reshape)
+library(reshape2)
 cvx.melt <- melt(cvx,measure.vars=1:2)
 
 ## plot each dimension separately using lattice
@@ -38,10 +36,10 @@ update(p,main="the path algorithm (lines) agrees with cvxmod (points)")+
 ## compare with cvx manually
 p+
   geom_point(aes(size=lambda/max(lambda)),data=cvx,shape=17,colour="red")+
-    opts(title=paste("Optimal solutions from path algorithm (black circles)",
-           "agree with cvxmod (red triangles)"))
+  ggtitle(paste("Optimal solutions from path algorithm (black circles)",
+                "agree with cvxmod (red triangles)"))
 ## or use a legend
 p+
   aes(shape=solver,colour=solver)+
-    geom_point(aes(size=lambda/max(lambda)),data=cvx)
+  geom_point(aes(size=lambda/max(lambda)),data=cvx)
 }

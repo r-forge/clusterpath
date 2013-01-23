@@ -2,9 +2,7 @@
 \alias{e.exponential}
 \title{e exponential}
 \description{eigenvector scaling function with fixed bandwidth.}
-\usage{
-e.exponential(evals, bw = 1e+09)
-}
+\usage{e.exponential(evals, bw = 1e+09)}
 \arguments{
   \item{evals}{
 }
@@ -14,7 +12,7 @@ e.exponential(evals, bw = 1e+09)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 

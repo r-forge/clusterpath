@@ -7,9 +7,8 @@ multicore package is installed each dimension will be processed on
 a separate core. This is useful since the path algorithm can't be
 used for general weights, since it only is proven to find the
 optimal solutions for the identity weights.}
-\usage{
-clusterpath.l1.general(x, join.thresh = NULL, verbose = 0, gamma = 0, ...)
-}
+\usage{clusterpath.l1.general(x, join.thresh = NULL, verbose = 0, gamma = 0, 
+    ...)}
 \arguments{
   \item{x}{Data matrix to cluster.}
   \item{join.thresh}{Threshold for fusion. If NULL take a small fraction of the nonzero
@@ -23,7 +22,7 @@ clusterpath.l2.general.}
 \value{Data frame of optimal solutions, with 1 row for each \eqn{\alpha_i}
 for each lambda.}
 \references{Hocking, Joulin, Bach, Vert ICML 2011.}
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\author{Toby Dylan Hocking}
 
 
 
@@ -45,6 +44,7 @@ if(require(latticeExtra)){
 }
 library(ggplot2)
 ## compare with cvx
+if(cvxmod.available()){
 gamma <- 0.1
 descent.weights <- clusterpath.l1.general(sim$mat,gamma=gamma,lambda=0.001)
 lvals <- c(seq(min(descent.weights$lambda),0.02,l=4),
@@ -55,4 +55,5 @@ molt <- melt(both,measure=c("alpha.1","alpha.2"))
 ggplot(molt,aes(log(lambda+1),value,colour=solver))+
   geom_point(aes(shape=solver))+
   facet_grid(variable~.,scales="free")
+}
 }
