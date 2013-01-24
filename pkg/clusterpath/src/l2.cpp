@@ -1,5 +1,6 @@
 /* -*- compile-command: "make l2.out"  -*- */ 
 #include "l2.h"
+#include <R_ext/Utils.h>
 
 Vector operator-( Vector u, Vector v ) {
   int s = u.size();
@@ -182,6 +183,7 @@ Results* join_clusters2_restart
 	xbar[i]=x[i];
       }
     }
+    R_CheckUserInterrupt();
     while(grad>=opt_thresh){
       //first calc gradients
       grad = 0;
