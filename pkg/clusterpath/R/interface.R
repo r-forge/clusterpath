@@ -305,6 +305,7 @@ clusterpath.l1.id <- structure(function
 ### available, otherwise the standard lapply.
  ){
   x <- as.matrix(x)
+  stopifnot(is.numeric(x))
   dfs <- LAPPLY(1:ncol(x),function(k){
     L <- .Call("join_clusters_convert",x[,k],PACKAGE="clusterpath")
     data.frame(L[1:2],

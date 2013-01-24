@@ -5,6 +5,8 @@
 #include "l2.h"
 
 using namespace Rcpp ;
+
+extern "C" {
  
 SEXP tree2list(Cluster *c){
   int nrow=c->total;
@@ -30,9 +32,9 @@ SEXP tree2list(Cluster *c){
 }
 
 // we process each dimension individually using this function
-RcppExport SEXP join_clusters_convert(SEXP xR){
-  NumericVector x(xR);
-  Cluster *tree=make_clusters_l1(&x[0],x.length());
+SEXP join_clusters_convert(SEXP xR){
+  //NumericVector x(xR);
+  Cluster *tree = make_clusters_l1(REAL(xR),length(xR));
   SEXP L=tree2list(tree);
   delete_tree(tree);
   return L;
@@ -41,27 +43,39 @@ RcppExport SEXP join_clusters_convert(SEXP xR){
 //construct a list that will be used in R to return a data.frame
 SEXP res2list(Results *r){
   unsigned int nrow=r->iterations.size() * r->n,i,k,row=0;
-  NumericMatrix alpha(nrow,r->p);
-  IntegerVector ivec(nrow);
-  NumericVector lambda(nrow),grad(nrow);
+  SEXP alpha, ivec, lambda, grad, result, names;
+  PROTECT(alpha = allocMatrix(REALSXP,nrow,r->p));
+  PROTECT(ivec = allocVector(INTSXP, nrow));
+  PROTECT(lambda = allocVector(REALSXP,nrow));
+  PROTECT(grad = allocVector(REALSXP, nrow));
   std::list<Iteration*>::iterator l;
   //r->print();
   for(l=r->iterations.begin();l!=r->iterations.end();l++){
     for(i=0;i<r->n;i++){
       for(k=0;k<r->p;k++){
 	//printf("%d %d %d %d %d\n",nrow,k,row,i,r->n);
-	alpha[nrow*k+row] = (*l)->alpha[i+k*r->n];
+	REAL(alpha)[nrow*k+row] = (*l)->alpha[i+k*r->n];
       }
-      lambda[row] = (*l)->lambda;
-      grad[row] = (*l)->grad;
-      ivec[row] = i;
+      REAL(lambda)[row] = (*l)->lambda;
+      REAL(grad)[row] = (*l)->grad;
+      INTEGER(ivec)[row] = i;
       row++;
     }
   }
-  return DataFrame::create(Named("alpha",alpha),
-			   Named("i",ivec),
-			   Named("lambda",lambda),
-			   Named("grad",grad));
+  PROTECT(names = allocVector(STRSXP, 4));
+  SET_STRING_ELT(names,0,mkChar("alpha"));
+  SET_STRING_ELT(names,1,mkChar("i"));
+  SET_STRING_ELT(names,2,mkChar("lambda"));
+  SET_STRING_ELT(names,3,mkChar("grad"));
+  PROTECT(result = allocVector(VECSXP, 4));
+  namesgets(result, names);
+  SET_VECTOR_ELT(result,0,alpha);
+  SET_VECTOR_ELT(result,1,ivec);
+  SET_VECTOR_ELT(result,2,lambda);
+  SET_VECTOR_ELT(result,3,grad);
+  
+  UNPROTECT(6);
+  return result;
 }
 
 RcppExport SEXP calcW_convert(SEXP x_R,SEXP gamma){
@@ -110,3 +124,4 @@ RcppExport SEXP join_clusters2_restart_convert
   return L;
 }
 
+}
