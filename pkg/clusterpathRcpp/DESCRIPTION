@@ -1,13 +1,14 @@
 Package: clusterpathRcpp
 Type: Package
-Title: Fast agglomerative clustering using convex fusion penalties
+Title: Fast agglomerative convex clustering, original Rcpp implementation
 Version: 1.1
-Date: 2011-05-10
+Date: 2013-01-24
 Author: Toby Dylan Hocking
 Maintainer: Toby Dylan Hocking <toby.hocking@inria.fr>
 Description: Implements the clusterpath, a clustering method in which all
  the clusters are solutions to a convex optimization problem with fusion
- penalties. This package is a wrapper around the C++ implementation.
+ penalties. This package uses the original Rcpp bindings
+ to wrap the C++ implementation.
 License: GPL-3
 Depends: R (>= 2.11.0), Rcpp (>= 0.9.9), lattice, ggplot2, plyr, reshape2, 
 	 latticeExtra, Matrix, grid

@@ -80,6 +80,11 @@ class SymNoDiag {
   double *data;
   unsigned int N;
   unsigned int length;
+  SymNoDiag(int size, double *ptr){
+      this->N = size;
+      this->length = N*(N-1)/2;
+      this->data = ptr;
+  }
   SymNoDiag(int size){
     this->N = size;
     this->length = N*(N-1)/2;

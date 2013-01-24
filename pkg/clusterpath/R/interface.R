@@ -98,6 +98,7 @@ clusterpath.l2.general <- structure(function
              maxit,linesearch.freq,linesearch.points,check.splits,
              target.cluster,verbose,
              PACKAGE="clusterpath")
+  r <- do.call(rbind,r)
   alpha <- r
   colnames(alpha)[1:ncol(x)] <- NAMES <- alphacolnames(x)
   alpha$solved <- alpha$grad<opt.thresh
