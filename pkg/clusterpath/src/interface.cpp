@@ -86,7 +86,8 @@ SEXP join_clusters2_restart_convert
  SEXP target_cluster,
  SEXP verbose
  ){
-  SEXP x = allocMatrix(REALSXP, nrows(x_R), ncols(x_R));
+  SEXP x;
+  PROTECT(x = allocMatrix(REALSXP, nrows(x_R), ncols(x_R)));
   //NumericMatrix x(x_R);
   unsigned int i, N=nrows(x_R);
   SymNoDiag W(N);
@@ -111,6 +112,8 @@ SEXP join_clusters2_restart_convert
      INTEGER(verbose)[0]);
   SEXP L = res2list(r);
   delete r;
+
+  UNPROTECT(1);
   return L;
 }
 
