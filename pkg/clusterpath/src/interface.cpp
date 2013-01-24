@@ -1,19 +1,32 @@
+#include <R.h>
+#include <Rinternals.h>
 #include <Rcpp.h>
 #include "l1.h"
 #include "l2.h"
- 
-using namespace Rcpp ;
 
+using namespace Rcpp ;
+ 
 SEXP tree2list(Cluster *c){
   int nrow=c->total;
   //printf("%d total\n",nrow);
-  NumericVector alpha(nrow),lambda(nrow);
-  IntegerVector i(nrow);
+  SEXP alpha,lambda,i,result,names;
+  PROTECT(alpha = allocVector(REALSXP, nrow));
+  PROTECT(lambda = allocVector(REALSXP, nrow));
+  PROTECT(i = allocVector(INTSXP, nrow));
   int row=0;
-  add_results(c,&alpha[0],&lambda[0],&i[0],&row);
-  return DataFrame::create(Named("alpha",alpha),
-			   Named("lambda",lambda),
-			   Named("i",i));
+  add_results(c,REAL(alpha),REAL(lambda),INTEGER(i),&row);
+  PROTECT(names = allocVector(STRSXP, 3));
+  SET_STRING_ELT(names,0,mkChar("alpha"));
+  SET_STRING_ELT(names,1,mkChar("lambda"));
+  SET_STRING_ELT(names,2,mkChar("i"));
+  PROTECT(result = allocVector(VECSXP, 3));
+  namesgets(result, names);
+  SET_VECTOR_ELT(result, 0, alpha);
+  SET_VECTOR_ELT(result, 1, lambda);
+  SET_VECTOR_ELT(result, 2, i);
+  
+  UNPROTECT(5);
+  return(result);
 }
 
 // we process each dimension individually using this function
