@@ -1,0 +1,19 @@
+TODO
+
+compare timings as we scale vs hclust. we should beat hclust!
+
+make sweave vignette.
+
+1.1 --- 23 Jan 2013
+
+delete suggest animation.
+
+cvxmod code included in inst, specified using PYTHONPATH when invoked.
+
+only use cvxmod in examples if it is present, so checks can be passed
+and the package can be compiled on R-Forge.
+
+1.0 10 May 2011
+
+first public release. cvxmod solver, l1 path solver, l2 descent
+solver.
