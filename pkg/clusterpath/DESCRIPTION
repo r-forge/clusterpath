@@ -10,6 +10,7 @@ Description: Implements the clusterpath, a clustering method in which all
  penalties. 
  This package uses standard R/C headers to wrap the C++ implementation.
 License: GPL-3
-Depends: lattice, ggplot2, plyr, reshape2, 
+Depends: lattice, ggplot2, plyr, reshape2, Rcpp,
 	 latticeExtra, Matrix, grid
 Suggests: rgl, directlabels, mclust, multicore
+LinkingTo: Rcpp

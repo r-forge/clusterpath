@@ -94,12 +94,19 @@ clusterpath.l2.general <- structure(function
     if(verbose>=1)cat("using join threshold ",join.thresh,"\n",sep="")
   }
   r <- .Call("join_clusters2_restart_convert",x,wvec,
-             lambda,join.thresh,opt.thresh,lambda.factor,smooth,
-             maxit,linesearch.freq,linesearch.points,check.splits,
-             target.cluster,verbose,
+             as.numeric(lambda),
+             as.numeric(join.thresh),
+             as.numeric(opt.thresh),
+             as.numeric(lambda.factor),
+             as.numeric(smooth),
+             as.integer(maxit),
+             as.integer(linesearch.freq),
+             as.integer(linesearch.points),
+             as.integer(check.splits),
+             as.integer(target.cluster),
+             as.integer(verbose),
              PACKAGE="clusterpath")
-  r <- do.call(rbind,r)
-  alpha <- r
+  alpha <- as.data.frame(r)
   colnames(alpha)[1:ncol(x)] <- NAMES <- alphacolnames(x)
   alpha$solved <- alpha$grad<opt.thresh
   alpha$row <- factor(alpha$i+1)

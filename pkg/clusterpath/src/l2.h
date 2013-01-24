@@ -80,18 +80,23 @@ class SymNoDiag {
   double *data;
   unsigned int N;
   unsigned int length;
+  int delete_ptr;
   SymNoDiag(int size, double *ptr){
       this->N = size;
       this->length = N*(N-1)/2;
       this->data = ptr;
+      this->delete_ptr = 0;
   }
   SymNoDiag(int size){
     this->N = size;
     this->length = N*(N-1)/2;
     this->data = new double[this->length];
+    this->delete_ptr = 1;
   }
   ~SymNoDiag(){
-    delete this->data;
+      if(this->delete_ptr){
+	  delete this->data;
+      }
   }
   int index(int first,int second)const{
     int I,J;
