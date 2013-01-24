@@ -80,7 +80,7 @@ cluster.points <- structure(function(m,k,...){
 },ex=function(){
   library(clusterpath)
   iriSc <- scale(as.matrix(iris[,1:4]))
-  iclust <- cluster.points(iriSc,3,verbose=1)
+  iclust <- cluster.points(iriSc, 3, verbose=1)
   splom(~iclust[1:4]|method,iclust,groups=guess)
   table(iclust$guess,rep(iris$Species,nlevels(iclust$method)),iclust$method)
 })

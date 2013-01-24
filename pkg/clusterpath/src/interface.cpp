@@ -1,6 +1,5 @@
 #include <R.h>
 #include <Rinternals.h>
-#include <Rcpp.h>
 #include "l1.h"
 #include "l2.h"
 
@@ -80,41 +79,40 @@ SEXP res2list(Results *r){
   return result;
 }
  
-
-}
-
-using namespace Rcpp;
-
-RcppExport SEXP join_clusters2_restart_convert
+SEXP join_clusters2_restart_convert
 (SEXP x_R,SEXP w_R,
  SEXP lambda,SEXP join_thresh,SEXP opt_thresh,SEXP lambda_factor,SEXP smooth,
  SEXP maxit,SEXP linesearch_freq,SEXP linesearch_points,SEXP check_splits,
  SEXP target_cluster,
  SEXP verbose
  ){
-  NumericMatrix x(x_R);
-  unsigned int i, N=x.nrow();
+  SEXP x = allocMatrix(REALSXP, nrows(x_R), ncols(x_R));
+  //NumericMatrix x(x_R);
+  unsigned int i, N=nrows(x_R);
   SymNoDiag W(N);
-  NumericVector wvec(w_R);
-  for(i=0;i<W.length;i++){
-    W.data[i] = wvec[i];
+  //NumericVector wvec(w_R);
+  for(i=0; i<W.length; i++){
+    W.data[i] = REAL(w_R)[i];
   }
   Results *r = join_clusters2_restart
-    (&x[0],
+    (REAL(x),
      &W,
-     x.ncol(),
-     NumericVector(lambda)[0],
-     NumericVector(join_thresh)[0],
-     NumericVector(opt_thresh)[0],
-     NumericVector(lambda_factor)[0],
-     NumericVector(smooth)[0],
-     IntegerVector(maxit)[0],
-     IntegerVector(linesearch_freq)[0],
-     IntegerVector(linesearch_points)[0],
-     IntegerVector(check_splits)[0],
-     IntegerVector(target_cluster)[0],
-     IntegerVector(verbose)[0]);
+     ncols(x),
+     REAL(lambda)[0],
+     REAL(join_thresh)[0],
+     REAL(opt_thresh)[0],
+     REAL(lambda_factor)[0],
+     REAL(smooth)[0],
+     INTEGER(maxit)[0],
+     INTEGER(linesearch_freq)[0],
+     INTEGER(linesearch_points)[0],
+     INTEGER(check_splits)[0],
+     INTEGER(target_cluster)[0],
+     INTEGER(verbose)[0]);
   SEXP L = res2list(r);
   delete r;
   return L;
 }
+
+}
+
