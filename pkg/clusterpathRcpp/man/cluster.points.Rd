@@ -21,7 +21,6 @@ several clustering algorithms on the matrix.}
 
 
 \examples{
-library(clusterpath)
 iriSc <- scale(as.matrix(iris[,1:4]))
 iclust <- cluster.points(iriSc,3,verbose=1)
 splom(~iclust[1:4]|method,iclust,groups=guess)

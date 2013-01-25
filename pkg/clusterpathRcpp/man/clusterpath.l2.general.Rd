@@ -58,7 +58,6 @@ plotting and comparing with other norms, weights and solvers.}
 
 
 \examples{
-library(clusterpath)
 x <- cbind(c(1.1,1.2,4,2),
            c(2.2,2.5,3,0))
 pts <- data.frame(alpha=x,i=1:nrow(x))

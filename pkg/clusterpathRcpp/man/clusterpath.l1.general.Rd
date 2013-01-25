@@ -29,7 +29,6 @@ for each lambda.}
 
 \examples{
 set.seed(7)
-library(clusterpath)
 sim <- gendata(D=2)
 ## compare with path algorithm
 path <- clusterpath.l1.id(sim$mat)
