@@ -1,2 +1,2 @@
-useDynLib(clusterpath)
+useDynLib(clusterpathRcpp)
 exportPattern("^[[:alpha:]]+")
