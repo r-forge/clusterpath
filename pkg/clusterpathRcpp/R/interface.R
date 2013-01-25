@@ -97,7 +97,7 @@ clusterpath.l2.general <- structure(function
              lambda,join.thresh,opt.thresh,lambda.factor,smooth,
              maxit,linesearch.freq,linesearch.points,check.splits,
              target.cluster,verbose,
-             PACKAGE="clusterpath")
+             PACKAGE="clusterpathRcpp")
   alpha <- r
   colnames(alpha)[1:ncol(x)] <- NAMES <- alphacolnames(x)
   alpha$solved <- alpha$grad<opt.thresh
@@ -306,7 +306,7 @@ clusterpath.l1.id <- structure(function
  ){
   x <- as.matrix(x)
   dfs <- LAPPLY(1:ncol(x),function(k){
-    L <- .Call("join_clusters_convert",x[,k],PACKAGE="clusterpath")
+    L <- .Call("join_clusters_convert",x[,k],PACKAGE="clusterpathRcpp")
     data.frame(L[1:2],
                row=factor(L$i+1),
                col=factor(k),
