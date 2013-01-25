@@ -73,8 +73,8 @@ SEXP res2list(Results *r){
   SET_VECTOR_ELT(result,1,ivec);
   SET_VECTOR_ELT(result,2,lambda);
   SET_VECTOR_ELT(result,3,grad);
-  Rprintf("%f %f %f %d\n",REAL(alpha)[0],REAL(lambda)[0],REAL(grad)[0],
-	  INTEGER(ivec)[0]);
+  //Rprintf("%f %f %f %d\n",REAL(alpha)[0],REAL(lambda)[0],REAL(grad)[0],
+  //  INTEGER(ivec)[0]);
   UNPROTECT(6);
   return result;
 }
@@ -86,19 +86,23 @@ SEXP join_clusters2_restart_convert
  SEXP target_cluster,
  SEXP verbose
  ){
-  SEXP x;
-  PROTECT(x = allocMatrix(REALSXP, nrows(x_R), ncols(x_R)));
+  //SEXP x;
+  unsigned int i, N=nrows(x_R), P=ncols(x_R);
+  //PROTECT(x = allocMatrix(REALSXP, N, P));
   //NumericMatrix x(x_R);
-  unsigned int i, N=nrows(x_R);
+  // for(i=0; i<N*P; i++){
+  //   REAL(x)[i] = REAL(x_R)[i];
+  // }
   SymNoDiag W(N);
   //NumericVector wvec(w_R);
   for(i=0; i<W.length; i++){
     W.data[i] = REAL(w_R)[i];
   }
+  //Rprintf("ncols(x)=%d nrows(x)=%d\n",ncols(x),nrows(x));
   Results *r = join_clusters2_restart
-    (REAL(x),
+    (REAL(x_R),
      &W,
-     ncols(x),
+     ncols(x_R),
      REAL(lambda)[0],
      REAL(join_thresh)[0],
      REAL(opt_thresh)[0],
@@ -113,7 +117,7 @@ SEXP join_clusters2_restart_convert
   SEXP L = res2list(r);
   delete r;
 
-  UNPROTECT(1);
+  //UNPROTECT(1);
   return L;
 }
 

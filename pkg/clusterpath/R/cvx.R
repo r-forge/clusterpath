@@ -127,7 +127,6 @@ cvxmod.cluster <- structure(function
   if(cvxmod.available()){
     ## by default if you don't specify any regularization parameters, we
     ## use some evenly spaced points in the s-parametrization.
-    library(clusterpath)
     set.seed(16)
     sim <- gendata(N=5,D=2,K=2,SD=0.5)
     cvx <- cvxmod.cluster(sim$mat,norm=2,gamma=0.5,verbose=TRUE)

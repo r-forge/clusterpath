@@ -32,7 +32,6 @@ clusterings <-
     print(dim(X))
     kmeans(X,k)$cluster
   }),list("clusterpath",function(m,k,path=NULL,gamma=2,verbose=0,...){
-    library(clusterpath)
     if(is.null(path))
       {##option to provide your own clusterpath tree for speed
         path <- clusterpath.l2.general(m,check.splits=0,verbose=verbose,
@@ -78,7 +77,6 @@ cluster.points <- structure(function(m,k,...){
   d
 ### A data frame with timings and guesses
 },ex=function(){
-  library(clusterpath)
   iriSc <- scale(as.matrix(iris[,1:4]))
   iclust <- cluster.points(iriSc, 3, verbose=1)
   splom(~iclust[1:4]|method,iclust,groups=guess)

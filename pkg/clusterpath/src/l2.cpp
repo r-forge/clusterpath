@@ -183,8 +183,8 @@ Results* join_clusters2_restart
 	xbar[i]=x[i];
       }
     }
-    R_CheckUserInterrupt();
     while(grad>=opt_thresh){
+      R_CheckUserInterrupt();
       //first calc gradients
       grad = 0;
       for(it=clusters.begin();it!=clusters.end();it++){
@@ -246,6 +246,7 @@ Results* join_clusters2_restart
 	  cost_step=calc_cost(clusters,amat,xmat,W,diffs,lambda);
 	  if(verbose>=2)
 	printf("cost %.10f step %f cost_here %f\n",cost_step,step,cost_here);
+	R_CheckUserInterrupt();
 	  cost_steps.insert(std::pair<double,double>(cost_step,step));
 	}
 	for(int cuts=0;cuts<linesearch_points;cuts++){

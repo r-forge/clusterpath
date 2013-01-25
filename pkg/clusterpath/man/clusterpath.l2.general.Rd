@@ -58,7 +58,6 @@ plotting and comparing with other norms, weights and solvers.}
 
 
 \examples{
-library(clusterpath)
 x <- cbind(c(1.1,1.2,4,2),
            c(2.2,2.5,3,0))
 pts <- data.frame(alpha=x,i=1:nrow(x))
@@ -70,9 +69,12 @@ Wmat[4,1] <- Wmat[1,4] <- 1
 Wmat[4,2] <- Wmat[2,4] <- 20
 Wmat[4,3] <- Wmat[3,4] <- 1
 w <- as.dist(Wmat)
-res <- clusterpath.l2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1)
-lvals <- unique(res$lambda)
+res <- clusterpath.l2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1,
+                              verbose=0)
+plot(res)
+
 if(cvxmod.available()){
+  lvals <- unique(res$lambda)
   cvx <- cvxcheck(res,lambda=seq(0,max(lvals),l=8))
   library(plyr)
   cvx2 <- ddply(cvx,.(lambda),function(d){

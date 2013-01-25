@@ -18,7 +18,7 @@ lasso.}
 
 \examples{
 ## cluster the iris data
-path <- clusterpath.l2(iris[,1:4],gamma=1)
+path <- clusterpath.l2(iris[,1:4],gamma=1,verbose=1)
 plot(path,groups=iris$Species)
 ## compare with l1 path
 bpts <- clusterpath.l1.id(iris[,1:4])

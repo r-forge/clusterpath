@@ -9,7 +9,7 @@ clusterpath.l2 <- structure(function
   clusterpath.l2.general(x=x,w=x,check.splits=0,...)
 },ex=function(){
   ## cluster the iris data
-  path <- clusterpath.l2(iris[,1:4],gamma=1)
+  path <- clusterpath.l2(iris[,1:4],gamma=1,verbose=1)
   plot(path,groups=iris$Species)
   ## compare with l1 path
   bpts <- clusterpath.l1.id(iris[,1:4])
@@ -131,7 +131,6 @@ clusterpath.l2.general <- structure(function
 ### were any. Then rows lambda, row, gamma, norm, solver which permit
 ### plotting and comparing with other norms, weights and solvers.
 },ex=function(){
-  library(clusterpath)
   x <- cbind(c(1.1,1.2,4,2),
              c(2.2,2.5,3,0))
   pts <- data.frame(alpha=x,i=1:nrow(x))
@@ -143,9 +142,12 @@ clusterpath.l2.general <- structure(function
   Wmat[4,2] <- Wmat[2,4] <- 20
   Wmat[4,3] <- Wmat[3,4] <- 1
   w <- as.dist(Wmat)
-  res <- clusterpath.l2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1)
-  lvals <- unique(res$lambda)
+  res <- clusterpath.l2.general(x,w,gamma=NA,lambda=0.001,lambda.factor=1.1,
+                                verbose=0)
+  plot(res)
+  
   if(cvxmod.available()){
+    lvals <- unique(res$lambda)
     cvx <- cvxcheck(res,lambda=seq(0,max(lvals),l=8))
     library(plyr)
     cvx2 <- ddply(cvx,.(lambda),function(d){
