@@ -123,7 +123,6 @@ clusterpath.l2.general <- structure(function
 ### were any. Then rows lambda, row, gamma, norm, solver which permit
 ### plotting and comparing with other norms, weights and solvers.
 },ex=function(){
-  library(clusterpath)
   x <- cbind(c(1.1,1.2,4,2),
              c(2.2,2.5,3,0))
   pts <- data.frame(alpha=x,i=1:nrow(x))
@@ -264,7 +263,6 @@ clusterpath.l1.general <- structure(function
 ### for each lambda.
 },ex=function(){
   set.seed(7)
-  library(clusterpath)
   sim <- gendata(D=2)
   ## compare with path algorithm
   path <- clusterpath.l1.id(sim$mat)
