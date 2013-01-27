@@ -118,21 +118,19 @@ cluster3d(iris[,1:3],gamma=1)
 
 <h2>Troubleshooting</h2>
 
-<p>The clusterpath package depends on Rcpp. If you can't seem to get
-Rcpp to install, perhaps you need to install a more recent version of
-R:</p>
+<p>There are two versions of clusterpath: one that depends on Rcpp and
+one that does not. Both contain the same functions for optimization
+and clustering. If one does not work, try installing the other:</p>
 
 <pre>
-cd
-mkdir R
-cd R
-wget ftp://ftp.stat.math.ethz.ch/Software/R/R-devel.tar.gz
-tar -xf R-devel.tar.gz
-cd R-devel
-./configure --prefix=$HOME
-make
-make install
+install.packages("clusterpath",repos="http://r-forge.r-project.org")
+library(clusterpath)
+install.packages("clusterpathRcpp",repos="http://r-forge.r-project.org")
+library(clusterpathRcpp)
 </pre>
+
+<p>Also, you may have to <a href="http://cran.rstudio.com/"</a>install
+a more recent version of R</a>.</p>
 
 <p>Back to 
 <a href="http://r-forge.r-project.org/projects/clusterpath/">the
