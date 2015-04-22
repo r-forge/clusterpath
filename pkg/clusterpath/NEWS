@@ -9,6 +9,8 @@ make sweave vignette.
 Use ((*events_ptr).end()) instead of ((Events::iterator)0) to mark a null event.
 This is required for compiling without errors on mac (gcc=clang).
 
+require(parallel) instead of require(multicore)
+
 1.1 --- 23 Jan 2013
 
 delete suggest animation.

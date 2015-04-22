@@ -3,12 +3,12 @@
 \title{clusterpath l1 id}
 \description{Cluster a matrix using the identity weights on each dimension. The
 L1 problem is separable, so we can process each dimension
-separately on each core if the multicore package is available.}
-\usage{clusterpath.l1.id(x, LAPPLY = if (require(multicore)) mclapply else lapply)}
+separately on each core if the parallel package is available.}
+\usage{clusterpath.l1.id(x, LAPPLY = if (require(parallel)) mclapply else lapply)}
 \arguments{
   \item{x}{Matrix of data.}
   \item{LAPPLY}{Function to use to combine the results of each dimension. Defaults
-to mclapply for parallel processing if the multicore package is
+to mclapply for parallel processing if the parallel package is
 available, otherwise the standard lapply.}
 }
 

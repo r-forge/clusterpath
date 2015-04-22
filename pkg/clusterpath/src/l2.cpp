@@ -1,6 +1,7 @@
 /* -*- compile-command: "make l2.out"  -*- */ 
 #include "l2.h"
 #include <R_ext/Utils.h>
+#include <R.h>
 
 Vector operator-( Vector u, Vector v ) {
   int s = u.size();
@@ -112,7 +113,7 @@ double calc_cost
       }
     }
   }
-  //printf("loss %f lambda %f penalty %f\n",loss,lambda,penalty);
+  //Rprintf("loss %f lambda %f penalty %f\n",loss,lambda,penalty);
   //return 0.5 * loss + lambda / ((double)(W->N-1)) * penalty;
   //TDH alternate parameterization
   return 0.5 * loss + lambda * penalty;
@@ -228,7 +229,7 @@ Results* join_clusters2_restart
 	//TDH and pierre 18 jan 2011 try sqrt dec step size
 	step=1/((double)iteration);
 	//step=1/sqrt((double)iteration);
-	if(verbose>=2)printf("grad %f step %f it %d\n",grad,step,iteration);
+	if(verbose>=2)Rprintf("grad %f step %f it %d\n",grad,step,iteration);
 	take_step(clusters,alpha,dir,N,Px,step);
       }else{
 	double cost_here,cost_step;
@@ -245,7 +246,7 @@ Results* join_clusters2_restart
 	  diffs.calc_diffs(clusters,amat,nrm2);
 	  cost_step=calc_cost(clusters,amat,xmat,W,diffs,lambda);
 	  if(verbose>=2)
-	printf("cost %.10f step %f cost_here %f\n",cost_step,step,cost_here);
+	Rprintf("cost %.10f step %f cost_here %f\n",cost_step,step,cost_here);
 	R_CheckUserInterrupt();
 	  cost_steps.insert(std::pair<double,double>(cost_step,step));
 	}
@@ -259,21 +260,21 @@ Results* join_clusters2_restart
 	  take_step(clusters,alpha,dir,N,Px,step);
 	  diffs.calc_diffs(clusters,amat,nrm2);
 	  cost_step=calc_cost(clusters,amat,xmat,W,diffs,lambda);
-	  if(verbose>=2)printf("cost %.10f step %f %d\n",cost_step,step,cuts);
+	  if(verbose>=2)Rprintf("cost %.10f step %f %d\n",cost_step,step,cuts);
 	  cost_steps.insert(std::pair<double,double>(cost_step,step));
 	}
 	cost_steps.clear();
       }
       if(iteration++ > maxit){
 	if(tried_restart){
-	  printf("max iteration %d exit\n",maxit);
+	  Rprintf("max iteration %d exit\n",maxit);
 	  delete old_alpha;
 	  delete alpha;
 	  delete xbar;
 	  delete dir;
 	  return results;
 	}else{
-	  if(verbose>=1)printf("max iterations, trying restart from x\n");
+	  if(verbose>=1)Rprintf("max iterations, trying restart from x\n");
 	  tried_restart=1;
 	  iteration=1;
 	  for(i=0;i<N*Px;i++)alpha[i]=x[i];
@@ -285,7 +286,7 @@ Results* join_clusters2_restart
       JoinPair tojoin;
       while(dojoin(tojoin=check_clusters_thresh(&clusters,diffs,join_thresh))){
 	//if(verbose>=1)
-	//  printf("join: %d %d\n",tojoin.first->front(),tojoin.second->front());
+	//  Rprintf("join: %d %d\n",tojoin.first->front(),tojoin.second->front());
 	int ni=tojoin.first->size();
 	int nj=tojoin.second->size();
 	i=tojoin.first->front();
@@ -307,7 +308,7 @@ Results* join_clusters2_restart
       }
     }//while(grad>=opt_thresh)
     if(verbose>=1)
-    printf("solution iteration %d lambda %f nclusters %d\n",
+    Rprintf("solution iteration %d lambda %f nclusters %d\n",
 	   iteration,lambda,(int)clusters.size());
     
     if(target_cluster == 0){
@@ -337,7 +338,7 @@ Results* join_clusters2_restart
     //lambda and go look for it!
     if((int)clusters.size()<target_cluster){
       if(verbose>=1){
-	printf("missed target %d, going back for it\n",target_cluster);
+	Rprintf("missed target %d, going back for it\n",target_cluster);
       }
       lambda = (lambda+old_lambda)/2;
       clusters.clear();
@@ -365,7 +366,7 @@ Results* join_clusters2_restart
 	}
       }
       results->add(alpha,lambda,grad);
-      if(verbose>=1)printf("got target cluster %d exit\n",target_cluster);
+      if(verbose>=1)Rprintf("got target cluster %d exit\n",target_cluster);
       delete old_alpha;
       delete alpha;
       delete xbar;

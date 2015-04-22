@@ -112,7 +112,7 @@ cvxmod.cluster <- structure(function
     names(d)[1:length(NAMES)] <- NAMES
     d
   }
-  LAP <- if(require(multicore))mclapply else lapply
+  LAP <- if(require(parallel))mclapply else lapply
   ##LAP <- lapply #debug
   dfs <- LAP(param.vals,cluster)
   isdf <- sapply(dfs,is.data.frame)

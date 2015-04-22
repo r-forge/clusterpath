@@ -11,4 +11,4 @@ Description: Implements the clusterpath, a clustering method in which all
 License: GPL-3
 Depends: lattice, ggplot2, plyr, reshape2, 
 	 latticeExtra, Matrix, grid
-Suggests: rgl, directlabels, mclust, multicore
+Suggests: rgl, directlabels, mclust, parallel

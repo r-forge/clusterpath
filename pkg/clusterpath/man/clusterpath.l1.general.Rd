@@ -3,7 +3,7 @@
 \title{clusterpath l1 general}
 \description{Use the l2 descent problem with general weights to solve the
 weighted l1 problem, separately for each dimension. If the
-multicore package is installed each dimension will be processed on
+parallel package is installed each dimension will be processed on
 a separate core. This is useful since the path algorithm can't be
 used for general weights, since it only is proven to find the
 optimal solutions for the identity weights.}

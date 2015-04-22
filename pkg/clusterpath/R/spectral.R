@@ -17,7 +17,6 @@ usual.eigenvectors <- function(vectors,...){
 get.old.best <- function(m,k,evec.transform){
   lists <- lapply(c(1:10),function(gamma){
   ##lists <- lapply(c(10^((-7):2)),function(gamma){
-    require(Matrix)
     w <- as.matrix(exp(-gamma*dist(m)^2))
     Gm12 <- Diagonal(nrow(m),1/sqrt(apply(w,1,sum)))
     G <- Diagonal(nrow(m),apply(w,1,sum))
@@ -108,7 +107,6 @@ get.best.eigenvectors <- structure(function(S,K,evec.transform){
     V %*% E
   }
   try.gamma <- function(gamma,FUN){
-    require(Matrix)
     N <- nrow(S)
     A <- Matrix(as.matrix(exp(-gamma*dist(S)^2)))
     sums <- apply(A,1,sum)

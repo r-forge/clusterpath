@@ -180,8 +180,6 @@ castbreakpoints <- structure(function
 (df
 ### clusterpath data frame.
  ){
-  require(reshape2)
-  require(plyr)
   NAMES <- levels(df$col)
   d <- dcast(rename(df,c(alpha="value")),...~col,mean)
   for(col in NAMES)d <- ddply(d,.(row),fillin,col)

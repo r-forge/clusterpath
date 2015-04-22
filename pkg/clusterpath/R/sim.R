@@ -8,7 +8,6 @@ gendata <- function(N=5,K=2,D=3,SD=0.1){
 ### simulate some data in the shape of 2 half-moons and run some
 ### clustering algorithms on them.
 halfmoon.cluster <- function(seed,N=150,noise=0.5,...){
-  require(plyr)
   set.seed(seed)
   halfcircle <- function(r,center=c(0,0),class,sign){
     angle <- runif(N,0,pi)

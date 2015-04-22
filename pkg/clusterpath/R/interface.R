@@ -208,7 +208,7 @@ clusterpath.l2.general <- structure(function
   }
   print(p)
   ## compare decreasing step size with mixed decreasing/linesearch
-  LAPPLY <- if(require(multicore))mclapply else lapply
+  LAPPLY <- if(require(parallel))mclapply else lapply
   lsres <- LAPPLY(c(0,2,10,20),function(lsval){
     print(lsval)
     r <- with.timelabels(linesearch.freq=lsval,maxit=10e4)
@@ -222,7 +222,7 @@ clusterpath.l2.general <- structure(function
 clusterpath.l1.general <- structure(function
 ### Use the l2 descent problem with general weights to solve the
 ### weighted l1 problem, separately for each dimension. If the
-### multicore package is installed each dimension will be processed on
+### parallel package is installed each dimension will be processed on
 ### a separate core. This is useful since the path algorithm can't be
 ### used for general weights, since it only is proven to find the
 ### optimal solutions for the identity weights.
@@ -246,7 +246,7 @@ clusterpath.l1.general <- structure(function
     if(verbose>=1)cat("using join threshold ",join.thresh,"\n",sep="")
   }
   w <- exp(-gamma*dist(x)^2)
-  LAPPLY <- if(require(multicore))mclapply else lapply
+  LAPPLY <- if(require(parallel))mclapply else lapply
   dfs <- LAPPLY(1:ncol(x),function(j){
     clusterpath.l2.general(x[,j],w=w,join.thresh=join.thresh,gamma=gamma,
                            verbose=verbose,...)
@@ -306,12 +306,12 @@ clusterpath.l1.general <- structure(function
 clusterpath.l1.id <- structure(function
 ### Cluster a matrix using the identity weights on each dimension. The
 ### L1 problem is separable, so we can process each dimension
-### separately on each core if the multicore package is available.
+### separately on each core if the parallel package is available.
 (x,
 ### Matrix of data.
- LAPPLY=if(require(multicore))mclapply else lapply
+ LAPPLY=if(require(parallel))mclapply else lapply
 ### Function to use to combine the results of each dimension. Defaults
-### to mclapply for parallel processing if the multicore package is
+### to mclapply for parallel processing if the parallel package is
 ### available, otherwise the standard lapply.
  ){
   x <- as.matrix(x)
@@ -361,7 +361,6 @@ predict.clusterpath <- function
  ...
 ### ignored.
  ){
-  require(plyr)
   calc1 <- function(d){
     dm <- merge(d,data.frame(lambda),all=TRUE)
     tofill <- transform(dm,row=row[1],col=col[1],gamma=gamma[1],

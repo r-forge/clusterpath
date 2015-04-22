@@ -135,7 +135,7 @@ if(cvxmod.available()){
 }
 print(p)
 ## compare decreasing step size with mixed decreasing/linesearch
-LAPPLY <- if(require(multicore))mclapply else lapply
+LAPPLY <- if(require(parallel))mclapply else lapply
 lsres <- LAPPLY(c(0,2,10,20),function(lsval){
   print(lsval)
   r <- with.timelabels(linesearch.freq=lsval,maxit=10e4)
