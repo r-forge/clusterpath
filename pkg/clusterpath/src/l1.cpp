@@ -3,38 +3,8 @@
 #include <stdio.h>
 #include "l1.h"
 
-#define NullEvent ((Events::iterator)0)
 #define NEW_EVENT_THRESH 1e-10
 #define SIGN(x)( ((x)==0)?(0):( (((x)>0)?(1):(-1)) ) )
-
-void print_path(Cluster *c){
-  printf("%f %f\n",c->lambda,c->alpha);
-  if(c->child1 != NullCluster)print_path(c->child1);
-  if(c->child2 != NullCluster)print_path(c->child2);
-}
-
-void print_clusters(Clusters c){
-  Clusters::const_iterator it;
-  for(it = c.begin(); it != c.end();++it){
-    printf("%4d %4d %8.3f %8.3f %8.3f ",(*it)->total,(int)(*it)->i.size(),
-	   (*it)->alpha,(*it)->lambda,(*it)->v);
-    if((*it)->merge_with_next == (Events::iterator)0)std::cout << "NULL";
-    else std::cout<< (*it)->merge_with_next->first;
-    std::cout << std::endl;
-   }
-  std::cout << std::endl;
-}
-
-void print_events(Events events){
-  Events::const_iterator it;
-  for(it = events.begin(); it != events.end();++it){
-    printf("%8.3f ",it->first);
-    if(it->second == (Clusters::iterator)0)std::cout << "NULL";
-    else printf("%8.3f ",(*(it->second))->alpha);
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-}
 
 //calculate lambda where cluster c1 would hit cluster c2
 double lnew(Cluster *c1,Cluster *c2){
@@ -45,7 +15,7 @@ double lnew(Cluster *c1,Cluster *c2){
 void insert_new_event(Events *events_ptr,Cluster *newc,
 		      Cluster *neighbor_cluster,Clusters::iterator top_it,
 		      Cluster *old_cluster){
-  if(old_cluster->merge_with_next != NullEvent){
+  if(old_cluster->merge_with_next != (*events_ptr).end()){
     (*events_ptr).erase(old_cluster->merge_with_next);//constant
   }
   Cluster *top_cluster = *top_it;
@@ -56,7 +26,7 @@ void insert_new_event(Events *events_ptr,Cluster *newc,
     //printf("inserting!\n");
     new_event=(*events_ptr).insert(e);//logarithmic
   }else{
-    new_event=NullEvent;
+    new_event=(*events_ptr).end();
   }
   top_cluster->merge_with_next = new_event;
 }

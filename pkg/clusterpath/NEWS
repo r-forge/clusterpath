@@ -4,6 +4,11 @@ compare timings as we scale vs hclust. we should beat hclust!
 
 make sweave vignette.
 
+1.2 --- 22 Apr 2015
+
+Use ((*events_ptr).end()) instead of ((Events::iterator)0) to mark a null event.
+This is required for compiling without errors on mac (gcc=clang).
+
 1.1 --- 23 Jan 2013
 
 delete suggest animation.
